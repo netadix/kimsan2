@@ -64,6 +64,7 @@ public enum GameStatus
     GameOver2,
     Ending,
     Cleared,
+    Cleared1,
     ClearedNormalStage,
     ClearedRocket,
     ClearedRocket1,
@@ -185,6 +186,7 @@ public class PanelSystem : MonoBehaviour
     public GameObject PanelMovingParticle;
     public GameObject RestartButton;
     public GameObject TimeToRestartText;
+    public GameObject ScoreDialogImage;
 
     private float panelWidth;
     private float panelHeight;
@@ -221,11 +223,13 @@ public class PanelSystem : MonoBehaviour
 
     private GameObject explosionPrefab;
     private int life;
-    private float TimeRemain;
+    private float timeRemain;
     private bool timeTextAnimationFlag;
     private const int rocketStagePeriod = 5;    // ロケットを飛ばすステージ間隔
     private bool restartFlag;
     private DateTime restartTime;
+    private int steps;
+    private int score;
 
     //---------------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------------
@@ -253,7 +257,8 @@ public class PanelSystem : MonoBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-            theta = Mathf.PI / 2f / 16f * i;
+           // theta = Mathf.PI / 2f / 16f * i;
+            theta = Mathf.PI / 2f / 17f * i + Mathf.PI / 2f / 20f;
             y = Mathf.Sin(theta) * r;
             x = Mathf.Cos(theta) * r;
             x1 = x - panelWidth / 2f;
@@ -267,7 +272,8 @@ public class PanelSystem : MonoBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-            theta = Mathf.PI / 2f / 16f * i + Mathf.PI / 2f / 16f / 2f;
+           // theta = Mathf.PI / 2f / 16f * i + Mathf.PI / 2f / 16f / 2f;
+            theta = Mathf.PI / 2f / 17f * i + Mathf.PI / 2f / 20f;
             y = Mathf.Sin(theta) * r;
             x = Mathf.Cos(theta) * r;
             x1 = x - panelWidth / 2f;
@@ -312,7 +318,8 @@ public class PanelSystem : MonoBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-            float theta = Mathf.PI / 2f / 16f * i + Mathf.PI / 2f / 16f / 2f;    
+            //float theta = Mathf.PI / 2f / 16f * i + Mathf.PI / 2f / 16f / 2f;
+            float theta = Mathf.PI / 2f / 17f * i + Mathf.PI / 2f / 20f;
             y = Mathf.Sin(theta) * r;
             x = Mathf.Cos(theta) * r;
 
@@ -362,7 +369,8 @@ public class PanelSystem : MonoBehaviour
         obj = Instantiate(PlainPanel, transform.position, Quaternion.Euler(0f, 0f, 0f)) as GameObject;
         for (int i = 0; i < 16; i++)
         {
-            Vector2 pos = new Vector2((float)i * panelWidth / 16f - panelWidth / 2f + panelWidth / 32f, 0f);   // Horizontal Line
+            //Vector2 pos = new Vector2((float)i * panelWidth / 16f - panelWidth / 2f + panelWidth / 32f, 0f);   // Horizontal Line
+            Vector2 pos = new Vector2((float)i * panelWidth / 17f - panelWidth / 2f + panelWidth / 20f, 0f);   // Horizontal Line
             child = Instantiate(FireRope, pos, Quaternion.Euler(0f, 0f, 0f)) as GameObject;
             child.transform.position = pos;
             child.transform.parent = obj.transform;
@@ -436,7 +444,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -475,7 +483,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -514,7 +522,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -553,7 +561,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -592,7 +600,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -631,7 +639,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 20f;
+                timeRemain = 20f;
 
                 stage = new PanelType[]
                 {
@@ -670,7 +678,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 60f;
+                timeRemain = 60f;
 
                 stage = new PanelType[]
                 {
@@ -709,7 +717,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -748,7 +756,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -787,7 +795,7 @@ public class PanelSystem : MonoBehaviour
                 // Stage1 [4, 4]
                 panelSize = 4;
 
-                TimeRemain = 60f;
+                timeRemain = 60f;
 
                 stage = new PanelType[]
                 {
@@ -825,7 +833,7 @@ public class PanelSystem : MonoBehaviour
 
                 // Stage2 [5, 5]
                 panelSize = 5;
-                TimeRemain = 30f;
+                timeRemain = 30f;
 
                 stage = new PanelType[]
                 {
@@ -868,7 +876,7 @@ public class PanelSystem : MonoBehaviour
 
                 // Stage2 [5, 5]
                 panelSize = 5;
-                TimeRemain = 45f;
+                timeRemain = 45f;
 
                 stage = new PanelType[]
                 {
@@ -911,7 +919,7 @@ public class PanelSystem : MonoBehaviour
 
                 // Stage2 [5, 5]
                 panelSize = 5;
-                TimeRemain = 45f;
+                timeRemain = 45f;
 
                 stage = new PanelType[]
                 {
@@ -954,7 +962,7 @@ public class PanelSystem : MonoBehaviour
 
                 // Stage2 [5, 5]
                 panelSize = 5;
-                TimeRemain = 45f;
+                timeRemain = 45f;
 
                 stage = new PanelType[]
                 {
@@ -997,7 +1005,7 @@ public class PanelSystem : MonoBehaviour
 
                 // Stage2 [5, 5]
                 panelSize = 5;
-                TimeRemain = 45f;
+                timeRemain = 45f;
 
                 stage = new PanelType[]
                 {
@@ -1040,7 +1048,7 @@ public class PanelSystem : MonoBehaviour
 
                 // Stage3 [6, 6]
                 panelSize = 6;
-                TimeRemain = 20f;
+                timeRemain = 20f;
 
                 stage = new PanelType[]
                 {
@@ -1541,6 +1549,15 @@ public class PanelSystem : MonoBehaviour
         }
         timeTextAnimationFlag = false;
 
+        steps = 0;
+        score = 0;
+
+        ScoreDialogImage.SetActive(false);
+        TimeToRestartText.SetActive(false);
+        StageClearParticle.SetActive(false);
+        PanelMovingParticle.SetActive(false);
+        InformationText.SetActive(false);
+
         StartPanelProcedure();
     }
 
@@ -1622,7 +1639,6 @@ public class PanelSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TimeText.GetComponent<Text>().text = "TIME : " + TimeRemain.ToString("0.000");
         //-------------------------------------------------------------------------
         // 状態遷移
         //-------------------------------------------------------------------------
@@ -1630,6 +1646,19 @@ public class PanelSystem : MonoBehaviour
         {
             //-------------------------------------------------------------------------
             case GameStatus.Cleared:
+                if (ScoreDialogImage.GetComponent<ScoreDialog>().OkFlag)
+                {
+                    ScoreDialogImage.GetComponent<ScoreDialog>().OkFlag = false;
+                    score += ScoreDialogImage.GetComponent<ScoreDialog>().score;
+
+                    InformationText.GetComponent<Text>().text = "";
+
+                    gameStatus = GameStatus.Cleared1;
+                    StartCoroutine("AnimationStageRopeBurning");
+                }
+                break;
+
+            case GameStatus.Cleared1:
                 generalCounter++;
                 if (generalCounter >= 60)
                 {
@@ -1641,6 +1670,8 @@ public class PanelSystem : MonoBehaviour
                     else
                     {
                         gameStatus = GameStatus.ClearedNormalStage;
+                        TimeText.GetComponent<Text>().text = "TIME : " + timeRemain.ToString("0.000");
+                        StageText.GetComponent<Text>().text = "STAGE : " + stageCount;
                     }
 
                 }
@@ -1657,6 +1688,7 @@ public class PanelSystem : MonoBehaviour
                 {
                     generalCounter = 0;
                     gameStatus = GameStatus.ClearedRocket1;
+
                 }
                 break;
 
@@ -1665,7 +1697,6 @@ public class PanelSystem : MonoBehaviour
                 Missile.transform.GetComponent<Rigidbody>().velocity = new Vector3(0, (float)generalCounter / 12, 0);
                 if (generalCounter >= 150)
                 {
-                    InformationText.GetComponent<Text>().text = "";
                     //GotoStage(++stageCount);
                     stageCount++;
                     StartStage();
@@ -1682,7 +1713,6 @@ public class PanelSystem : MonoBehaviour
                 generalCounter++;
                 if (generalCounter >= 150)
                 {
-                    InformationText.GetComponent<Text>().text = "";
                     GotoStage(++stageCount);
                     gameStatus = GameStatus.PreStart;
                     generalCounter = 0;
@@ -1752,34 +1782,64 @@ public class PanelSystem : MonoBehaviour
                 break;
 
             case GameStatus.GameEnd2:
-                int TimeToStart = 1;
+                int TimeToStart = 10;   // minutes.
                 generalCounter++;
-                int lapsedMinute = (TimeToStart - 1) - DateTime.Now.Subtract(restartTime).Minutes;
-                int lapsedTime = (TimeToStart * 60 - 1) - DateTime.Now.Subtract(restartTime).Seconds;
-                string str = "ライフ復活まであと " + lapsedMinute.ToString("00") + ":" + (lapsedTime % 60).ToString("00");
-                TimeToRestartText.GetComponent<Text>().text = str;
 
-                if (lapsedTime <= 0)
+                int newlife = 0;
+                int remainTime = DateTime.Now.Subtract(restartTime).Minutes;
+                TimeSpan ts = DateTime.Now - restartTime;   //DateTime の差が TimeSpan として返る
                 {
-                    RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
-                    if (life <= 2)
+                    if (TimeToStart * 60 * 1 <= ts.TotalSeconds)
                     {
-                        life++;
-                        Remains[life - 1].SetActive(true);
-                        restartTime = DateTime.Now;
-                        PanelMovingParticle.SetActive(false);
-                        PanelMovingParticle.SetActive(true);
-                        PanelMovingParticle.transform.position = Remains[life - 1].transform.position;
+                        newlife = 1;
+                        RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
                     }
-                    if (life == 3)
+                    if (TimeToStart * 60 * 2 <= ts.TotalSeconds)
                     {
+                        newlife = 2;
+                    }
+                    if (TimeToStart * 60 * 3 <= ts.TotalSeconds)
+                    {
+                        newlife = 3;
                         TimeToRestartText.SetActive(false);
                     }
+                    string str = "ライフ復活まであと " + (TimeToStart - 1 - ((int)ts.TotalMinutes % TimeToStart)).ToString("00") + ":" + (60 - 1 - ((int)ts.TotalSeconds % 60)).ToString("00");
+                    TimeToRestartText.GetComponent<Text>().text = str;
+
+                    for (int i = 0; i < newlife; i++)
+                    {
+                        Remains[i].SetActive(true);
+                    }
+                    if (newlife > life)
+                    {
+                        PanelMovingParticle.SetActive(false);
+                        PanelMovingParticle.SetActive(true);
+                        PanelMovingParticle.transform.position = Remains[newlife - 1].transform.position;
+                    }
+                    life = newlife;
                 }
 
-                if (restartFlag == true)
+                //if (lapsedTime <= 0)
+                //{
+                //    RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
+                //    if (life <= 2)
+                //    {
+                //        life++;
+                //        Remains[life - 1].SetActive(true);
+                //        restartTime = DateTime.Now;
+                //        PanelMovingParticle.SetActive(false);
+                //        PanelMovingParticle.SetActive(true);
+                //        PanelMovingParticle.transform.position = Remains[life - 1].transform.position;
+                //    }
+                //    if (life == 3)
+                //    {
+                //        TimeToRestartText.SetActive(false);
+                //    }
+                //}
+
+                if (restartFlag == true)    // 再スタートボタンが押された
                 {
-                    if (life == 0) life = 1;
+                    if (life == 0) life = 1;        // とりあえずデバッグ用
 
                     restartFlag = false;
                     RestartButton.SetActive(false);
@@ -1814,6 +1874,7 @@ public class PanelSystem : MonoBehaviour
                 generalCounter++;
                 if (generalCounter >= 1)
                 {
+                    steps = 0;
 
                     Remains[life - 1].SetActive(false);
                     generalCounter = 0;
@@ -1869,8 +1930,10 @@ public class PanelSystem : MonoBehaviour
         float delta = (panelHeight + panelWidth) / 2f / 4f;    // 1/60秒ごとのパネル移動距離
         MoveDirection tapDirection = MoveDirection.None;
 
-        TimeRemain -= 1f / 60f;
-        if (TimeRemain <= 0f)
+        TimeText.GetComponent<Text>().text = "TIME : " + timeRemain.ToString("0.000");
+
+        timeRemain -= 1f / 60f;
+        if (timeRemain <= 0f)
         {
             StageEndCommonProcedure();
             life--;
@@ -1883,12 +1946,12 @@ public class PanelSystem : MonoBehaviour
                 GameOver("TIME OUT");
                 gameStatus = GameStatus.GameOver;
             }
-            TimeRemain = 0f;
+            timeRemain = 0f;
 
             return;
         }
 
-        if ((TimeRemain <= 5f) && (!timeTextAnimationFlag))   // タイマーが5以下になったらタイマーをハートビートさせる
+        if ((timeRemain <= 5f) && (!timeTextAnimationFlag))   // タイマーが5以下になったらタイマーをハートビートさせる
         {
             TimeText.GetComponent<Animation>().Play();
             timeTextAnimationFlag = true;
@@ -2284,8 +2347,10 @@ public class PanelSystem : MonoBehaviour
                 {
                     currentX--;
                 }
+                steps++;
 
                 DebugStatus();
+
                 return;
             }
         }
@@ -2314,6 +2379,8 @@ public class PanelSystem : MonoBehaviour
                 {
                     currentY--;
                 }
+                steps++;
+
                 DebugStatus();
 
                 return;
@@ -2345,8 +2412,10 @@ public class PanelSystem : MonoBehaviour
                 {
                     currentX++;
                 }
+                steps++;
 
                 DebugStatus();
+
                 return;
 
             }
@@ -2376,7 +2445,10 @@ public class PanelSystem : MonoBehaviour
                     currentY++;
                 }
 
+                steps++;
+
                 DebugStatus();
+
                 return;
 
             }
@@ -2904,12 +2976,14 @@ public class PanelSystem : MonoBehaviour
         TimeText.GetComponent<Text>().color = new Color(1.0f, 1.0f, 1.0f);
         timeTextAnimationFlag = false;
 
-//        FireCracker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        //        FireCracker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        ScoreDialogImage.GetComponent<ScoreDialog>().StartDialogAnimation(timeRemain, steps);   // スコアダイアログを表示
 
+        InformationText.SetActive(true);
         InformationText.GetComponent<Text>().text = "STAGE " + stageCount + " CLEAR";
         InformationText.GetComponent<Animation>().Play();
 
-        StageClearParticle.SetActive(true);
+        // StageClearParticle.SetActive(true);
 
         gameStatus = GameStatus.Cleared;
 
@@ -2943,7 +3017,7 @@ public class PanelSystem : MonoBehaviour
         PanelSubSystem.GetComponent<PanelObject>().RemoveFireCrackerFromParent();
         PanelSubSystem.GetComponent<PanelObject>().StartFlag = false;
 
-        StartCoroutine("AnimationStageRopeBurning");
+        //       StartCoroutine("AnimationStageRopeBurning");
 
     }
     // StartBurning(Direction, PanelType);
