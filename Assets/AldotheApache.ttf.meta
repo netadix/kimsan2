@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 5d350a292b576554b8138c3d64e34a08
-timeCreated: 1506604439
+timeCreated: 1507599408
 licenseType: Free
 TrueTypeFontImporter:
   serializedVersion: 4
@@ -12,7 +12,8 @@ TrueTypeFontImporter:
   fontName: Aldo the Apache
   fontNames:
   - Aldo the Apache
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 07abb7dc190c7d8499711e454fdd99c5, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

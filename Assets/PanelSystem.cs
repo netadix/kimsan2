@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.SceneManagement;
 
 // 0 Nothing (Empty)
 // 1 Straight Vertical
@@ -106,6 +107,22 @@ public class PanelMatrix
 
 }
 
+public class StageParameter
+{
+    public int HiScore;
+    public int ClearLevel;      // Normal : 0 / Excellent : 1
+    public float RemainTime;
+    public int Cleared;         // Cleared : 1 / Not Cleared : 0
+
+    public StageParameter()
+    {
+        HiScore = 0;
+        ClearLevel = 0;
+        RemainTime = 0f;
+        Cleared = 0;
+    }
+}
+
 public enum Stage
 {
     S_1 = 1,
@@ -157,14 +174,14 @@ public enum Stage
     S_47,
     S_48,
     S_49,
-
+    S_50,
+    S_MAX,
 }
 
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-//--------------------------------------------------------------------------
-public class PanelSystem : MonoBehaviour
+/// <summary>
+/// ///////////////////////////////////////////////////////////////////////
+/// </summary>
+public partial class PanelSystem : MonoBehaviour
 {
 
     public GameObject NoPanel;
@@ -176,6 +193,7 @@ public class PanelSystem : MonoBehaviour
     public GameObject MainCamera;
     public GameObject FireCracker;
     public GameObject Explosion;
+    public GameObject ExplosionM;
     public GameObject SpeedUpButton;
     public GameObject Missile;
     public GameObject StageClearParticle;
@@ -185,9 +203,18 @@ public class PanelSystem : MonoBehaviour
     public GameObject StageText;
     public GameObject PanelMovingParticle;
     public GameObject RestartButton;
+    public GameObject HomeButton;
     public GameObject TimeToRestartText;
     public GameObject ScoreDialogImage;
+    public GameObject ScoreText;
+    public GameObject NextArrowImage;
+    public GameObject LifeText;
+    public GameObject FadeOutPanel;
+    public GameObject GameOverDialogImage;
 
+    //public DateTime restartTime;   // ライフ復活までの時間
+
+    //----------------------------------------------------
     private float panelWidth;
     private float panelHeight;
     private int panelSize;
@@ -216,23 +243,36 @@ public class PanelSystem : MonoBehaviour
 
     private FuseDirection CurrentFusePanelDirection;
 
+    //----------------------------------------------------
     private int stageCount;
+    private bool okFlag;
 
     private GameStatus gameStatus;
     private int generalCounter;
 
-    private GameObject explosionPrefab;
-    private int life;
+    private GameObject explosionPrefab;         // 爆発のスタンダートアセットがプレハブになっているため毎回インスタンス化
     private float timeRemain;
     private bool timeTextAnimationFlag;
     private const int rocketStagePeriod = 5;    // ロケットを飛ばすステージ間隔
-    private bool restartFlag;
-    private DateTime restartTime;
-    private int steps;
-    private int score;
+    private bool restartFlag;       // 再スタートボタンが押された？
+    private int steps;              // 移動したパネルの数
+
+    private int score;              // 現在のスコア
+    private int excellentScore;     // 各ステージのEXCELLENTの条件スコアしきい値を格納
+    private StageParameter[] stageParameter;
+    private int hiScore;            // 過去の全体のハイスコア
+    private int clearedStage;       // クリアしたステージ数（これ以下のステージはクリアしている)
+
+    private bool stageRopeBurntFlag;
+    private int oneSecond;
 
     //---------------------------------------------------------------------------------------
+    partial void StageData(int stageNum);
+
+
     //---------------------------------------------------------------------------------------
+    // set your itunes app id like 00000000
+    private const string itunesAppId = "375380948";  // 評価してもらうためにAppStoreのID
     //---------------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------------
 
@@ -257,7 +297,7 @@ public class PanelSystem : MonoBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-           // theta = Mathf.PI / 2f / 16f * i;
+            // theta = Mathf.PI / 2f / 16f * i;
             theta = Mathf.PI / 2f / 17f * i + Mathf.PI / 2f / 20f;
             y = Mathf.Sin(theta) * r;
             x = Mathf.Cos(theta) * r;
@@ -272,7 +312,7 @@ public class PanelSystem : MonoBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-           // theta = Mathf.PI / 2f / 16f * i + Mathf.PI / 2f / 16f / 2f;
+            // theta = Mathf.PI / 2f / 16f * i + Mathf.PI / 2f / 16f / 2f;
             theta = Mathf.PI / 2f / 17f * i + Mathf.PI / 2f / 20f;
             y = Mathf.Sin(theta) * r;
             x = Mathf.Cos(theta) * r;
@@ -430,880 +470,13 @@ public class PanelSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// //////////////////////////////////////////////////////////////
-    /// </summary>
-    void StageData(int stageNum)
-    {
-        switch ((Stage)stageNum)
-        {
-            case Stage.S_1:     // Stage1
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                     // X 2列目
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-
-                     // X 3列目
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.Nothing,
-
-                     // X 4列目
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-
-                };
-                break;
-
-            case Stage.S_2:     // Stage2
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                     // X 2列目
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-
-                     // X 3列目
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-
-                     // X 4列目
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.Nothing,
-
-                };
-                break;
-
-            case Stage.S_3:     // Stage3
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.StraightHorizontal,
-
-                     // X 2列目
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-
-                     // X 3列目
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                     // X 4列目
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-
-                };
-                break;
-
-            case Stage.S_4:     // Stage4
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-
-                     // X 2列目
-                    PanelType.CurveUpRight,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-
-                     // X 3列目
-                    PanelType.CurveLeftUp,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveRightDown,
-
-                     // X 4列目
-                    PanelType.CurveUpRight,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-
-                };
-                break;
-
-            case Stage.S_5:     // Stage5
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Down;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-
-                     // X 2列目
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveUpRight,
-                    PanelType.StraightHorizontal,
-
-                     // X 3列目
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp_RightDown,
-
-                     // X 4列目
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightVertical,
-
-                };
-                break;
-
-            case Stage.S_6:     // Stage 6
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Down;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 20f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.CurveUpRight,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-
-                     // X 2列目
-                    PanelType.CurveLeftUp,
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.CurveRightDown,
-
-                     // X 3列目
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveRightDown,
-                    PanelType.StraightHorizontal,
-
-                     // X 4列目
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightVertical,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveDownLeft,
-
-                };
-                break;
-
-            case Stage.S_7:     // Stage 7
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 60f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.StraightHorizontal,
-
-                     // X 2列目
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-
-                     // X 3列目
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-
-                     // X 4列目
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft_UpRight,
-
-                };
-                break;
-
-            case Stage.S_8:     // Stage 8
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.StraightVertical,
-                    PanelType.CurveRightDown,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                     // X 2列目
-                    PanelType.CurveUpRight,
-                    PanelType.CurveLeftUp,
-                    PanelType.StraightVertical,
-                    PanelType.CurveRightDown,
-
-                     // X 3列目
-                    PanelType.StraightVertical,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveRightDown,
-                    PanelType.CurveDownLeft_UpRight,
-
-                     // X 4列目
-                    PanelType.CurveUpRight,
-                    PanelType.StraightVertical,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveDownLeft,
-
-                };
-                break;
-
-            case Stage.S_9:     // Stage 9
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Down;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.CurveLeftUp,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveDownLeft,
-
-                     // X 2列目
-                    PanelType.CurveUpRight,
-                    PanelType.CurveRightDown,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveRightDown,
-
-                     // X 3列目
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveDownLeft,
-
-                     // X 4列目
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveRightDown,
-
-                };
-                break;
-
-            case Stage.S_10:     // Stage 10
-                currentX = 0;
-                currentY = 3;
-                CurrentFusePanelDirection = FuseDirection.Down;
-
-                // Stage1 [4, 4]
-                panelSize = 4;
-
-                timeRemain = 60f;
-
-                stage = new PanelType[]
-                {
-                    // X 1列目
-                    PanelType.CurveUpRight,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-
-                     // X 2列目
-                    PanelType.Nothing,
-                    PanelType.CurveRightDown,
-                    PanelType.StraightVertical,
-                    PanelType.CurveRightDown,
-
-                     // X 3列目
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveRightDown,
-                    PanelType.CurveDownLeft,
-
-                     // X 4列目
-                    PanelType.CurveUpRight,
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp,
-                    PanelType.StraightVertical,
-
-                };
-                break;
-
-            case Stage.S_11:     // Stage 11
-                currentX = 0;
-                currentY = 4;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage2 [5, 5]
-                panelSize = 5;
-                timeRemain = 30f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft_UpRight,
-
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-               };
-                break;
-
-            case Stage.S_12:     // Stage 12
-                currentX = 0;
-                currentY = 4;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage2 [5, 5]
-                panelSize = 5;
-                timeRemain = 45f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.CurveUpRight,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.CurveRightDown,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveLeftUp,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft,
-               };
-                break;
-
-            case Stage.S_13:     // Stage 13
-                currentX = 0;
-                currentY = 4;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage2 [5, 5]
-                panelSize = 5;
-                timeRemain = 45f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.StraightHorizontal,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightVertical,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightVertical,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-                    PanelType.StraightVertical,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightVertical,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightVertical,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-               };
-                break;
-
-            case Stage.S_14:     // Stage 14
-                currentX = 0;
-                currentY = 4;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage2 [5, 5]
-                panelSize = 5;
-                timeRemain = 45f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightVertical,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveRightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveLeftUp_RightDown,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveRightDown,
-                    PanelType.StraightVertical,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp,
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightVertical,
-               };
-                break;
-
-            case Stage.S_15:     // Stage 15
-                currentX = 0;
-                currentY = 4;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage2 [5, 5]
-                panelSize = 5;
-                timeRemain = 45f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.Disabled,
-                    PanelType.Fixed,
-                    PanelType.Fixed,
-                    PanelType.Fixed,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveDownLeft,
-                    PanelType.Disabled,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.Disabled,
-                    PanelType.Nothing,
-                    PanelType.Disabled,
-                    PanelType.Fixed,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveLeftUp,
-                    PanelType.Fixed,
-                    PanelType.StraightVertical,
-
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveDownLeft,
-                    PanelType.Fixed,
-                    PanelType.Fixed,
-                    PanelType.StraightVertical,
-               };
-                break;
-
-            case Stage.S_21:     // Stage 21
-                currentX = 0;
-                currentY = 5;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage3 [6, 6]
-                panelSize = 6;
-                timeRemain = 20f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft,
-
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.CurveRightDown,
-
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft
-                };
-                break;
-
-/*
-            case Stage.S_7:     // Stage3
-                currentX = 0;
-                currentY = 5;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage3 [6, 6]
-                panelSize = 6;
-                TimeRemain = 60f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft_UpRight,
-
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.StraightVertical,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing
-                };
-                break;
-
-            case Stage.S_8:     // Stage4
-                currentX = 0;
-                currentY = 6;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage3 [7, 7]
-                panelSize = 7;
-                TimeRemain = 60f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft_UpRight,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.StraightVertical,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightVertical,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing
-                };
-                break;
-
-            case Stage.S_10:     // Stage6
-                currentX = 0;
-                currentY = 6;
-                CurrentFusePanelDirection = FuseDirection.Right;
-
-                // Stage3 [7, 7]
-                panelSize = 7;
-                TimeRemain = 60f;
-
-                stage = new PanelType[]
-                {
-                    PanelType.CurveDownLeft,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveDownLeft,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft,
-
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveLeftUp_RightDown,
-
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveUpRight,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.StraightVertical,
-                    PanelType.Nothing,
-                    PanelType.StraightHorizontal,
-
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.CurveUpRight,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightHorizontal,
-                    PanelType.CurveDownLeft_UpRight,
-                    PanelType.StraightVertical,
-                    PanelType.CurveLeftUp_RightDown,
-                    PanelType.Nothing,
-                    PanelType.CurveDownLeft_UpRight,
-                };
-                break;
-*/
-
-            default:
-                break;
-        }
-    }
-
-    /// <summary>
     /// /////////////////////////////////////////////////////////
     // 左下を原点として上方向(Y方向)に指定の大きさ(panelSize)のパネルを並べていく
     /// </summary>
     /// <param name="stageNum"></param>
     void CreateStage(out PanelMatrix retpanel, bool currentFlag = true)
     {
-        PanelMatrix panel  = new PanelMatrix(panelSize);
+        PanelMatrix panel = new PanelMatrix(panelSize);
         float offset = panelWidth / 2f;
 
         retpanel = panel;
@@ -1363,6 +536,72 @@ public class PanelSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="retpanel"></param>
+    /// <param name="currentFlag"></param>
+    void CreateRandomStage(out PanelMatrix retpanel, bool currentFlag = true)
+    {
+        PanelMatrix panel = new PanelMatrix(panelSize);
+        float offset = panelWidth / 2f;
+
+        retpanel = panel;
+
+        int count = 0;
+        for (int i = 0; i < panel.Size; i++)
+        {
+            for (int j = 0; j < panel.Size; j++)
+            {
+                panel.Matrix[i, j] = stage[count++];
+
+                PanelType panelType = (PanelType)((int)(UnityEngine.Random.value * 8f) + 1);
+                switch (panelType)
+                {
+                    case PanelType.StraightVertical:
+                        panel.PanelObject[i, j] = CreateLinePanel(panelType);
+                        break;
+
+                    case PanelType.StraightHorizontal:
+                        panel.PanelObject[i, j] = CreateLinePanel(panelType);
+                        break;
+
+                    case PanelType.CurveLeftUp:
+                    case PanelType.CurveUpRight:
+                    case PanelType.CurveRightDown:
+                    case PanelType.CurveDownLeft:
+                        panel.PanelObject[i, j] = CreateCurvePanel(panelType);
+                        break;
+
+                    case PanelType.CurveLeftUp_RightDown:
+                    case PanelType.CurveDownLeft_UpRight:
+                        panel.PanelObject[i, j] = CreateDoublePanel(panelType);
+                        break;
+
+                    case PanelType.Nothing:
+                        panel.PanelObject[i, j] = CreateNoPanel();
+                        break;
+
+                    case PanelType.Disabled:
+                        panel.PanelObject[i, j] = CreatePlainPanel();
+                        break;
+
+                    case PanelType.Fixed:
+                        panel.PanelObject[i, j] = CreateFixedPanel();
+                        break;
+                }
+
+                if (currentFlag)
+                {
+                    panel.PanelObject[i, j].transform.position = new Vector2(i * panelWidth, j * panelHeight);
+                }
+                else
+                {
+                    panel.PanelObject[i, j].transform.position = new Vector2(stageToStageFireRope[stageToStageFireRope.Length - 1].transform.position.x + i * panelWidth + offset, stageToStageFireRope[stageToStageFireRope.Length - 1].transform.position.y - ((panelSize - 1) * panelHeight) + j * panelHeight);
+                }
+            }
+        }
+    }
 
     enum RopeForStage
     {
@@ -1374,7 +613,7 @@ public class PanelSystem : MonoBehaviour
     /// <summary>
     /// ///////////////////////////////////////////
     /// </summary>
-    void CreateStageToStageRope(out GameObject [] obj, RopeForStage stg, int nextPanelSize = 0)
+    void CreateStageToStageRope(out GameObject[] obj, RopeForStage stg, int nextPanelSize = 0)
     {
         Vector2 pos = Vector3.zero;
         float offset = 0; // panelWidth / 2;      // TBD
@@ -1510,55 +749,111 @@ public class PanelSystem : MonoBehaviour
     /// </summary>
     void Start()
     {
+        stageParameter = new StageParameter[(int)Stage.S_MAX];
+
+        okFlag = false;
+
+        hiScore = 0;
+        clearedStage = 0;
+        for (int i = (int)Stage.S_1; i < (int)Stage.S_MAX; i++)
+        {
+            stageParameter[i] = new StageParameter();
+            stageParameter[i].HiScore = PlayerPrefs.GetInt("HI_SCORE" + i, 0);
+            stageParameter[i].ClearLevel = PlayerPrefs.GetInt("CLEAR_LEVEL" + i, 0);
+            stageParameter[i].Cleared = PlayerPrefs.GetInt("CLEARED" + i, 0);
+            stageParameter[i].RemainTime = PlayerPrefs.GetFloat("REMAIN_TIME" + i, 0f);
+            hiScore += stageParameter[i].HiScore;
+            score = hiScore;
+
+            if (stageParameter[i].Cleared == (int)1)
+            {
+                clearedStage = i;
+            }
+
+        }
+        DisplayScoreText(score);
 
         PanelDirection = MoveDirection.None;
         panelWidth = PlainPanel.GetComponent<SpriteRenderer>().bounds.size.x;  // 0.64 = 64 pixel
         panelHeight = PlainPanel.GetComponent<SpriteRenderer>().bounds.size.y;
 
         pushButtonCount = 0;
-        stageCount = 1;
-        gameStatus = GameStatus.Start;
+        int mode = PlayerPrefs.GetInt("CURRENT_STAGE", -1);
+        if (mode <= 0)
+        {
+            stageCount = clearedStage + 1; // クリアした直後のステージから（ここに来ることはない？）
+        }
+        else
+        {
+            stageCount = mode;      // Stage select
+        }
+
+        gameStatus = GameStatus.PreStart;
         generalCounter = 0;
         InformationText.GetComponent<Text>().text = "";
-        StageText.GetComponent<Text>().text = "STAGE : " + stageCount;
+        DisplayStageText(stageCount);
 
-        StageData(stageCount);  
+        StageData(stageCount);
         CreateStage(out Panel);
         StageData(stageCount + 1);        // 次のステージのデータ
         CreateStageToStageRope(out stageToStageFireRope, RopeForStage.NextStage, panelSize);
         StageData(stageCount);           // ステージをセットし直す
+
+        if ((stageCount % rocketStagePeriod) == 0)  // ロケット発射ステージ （ステージセレクトでここに来た）
+        {
+            CreateStageToStageRope(out nextStageToStageFireRope, RopeForStage.Rocket, 0);    // ロケットへのロープ
+            foreach (GameObject obj in stageToStageFireRope)
+            {
+                Destroy(obj);
+            }
+            stageToStageFireRope = nextStageToStageFireRope;
+            NextPanel = Panel;
+        }
 
         PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], FuseDirection.Left, Panel.Matrix[currentX, currentY]);
 
         Button btn = SpeedUpButton.GetComponent<Button>();
         btn.onClick.AddListener(SpeedUp);
 
-        Button btn1 = RestartButton.GetComponent<Button>();
-        btn1.onClick.AddListener(Restart);
-
         restartFlag = false;
-        RestartButton.SetActive(false);
 
-        life = 3;
-        Remains = new GameObject [life];
+        Remains = new GameObject[GlobalVariables.LifeMax];
 
-        for (int i = 0; i < life; i++)
+        for (int i = 0; i < GlobalVariables.LifeMax; i++)
         {
-            Remains[i] = Instantiate(Remain, new Vector3(0f + i * 0.4f, 5f, 0f), Quaternion.Euler(0f, 0f, 0f)) as GameObject;
+            Vector3 vec = LifeText.transform.position;
 
+            Remains[i] = Instantiate(Remain, vec + new Vector3(0.4f + i * 0.4f, 0f, 0f), Quaternion.Euler(0f, 0f, 0f)) as GameObject;
+
+            Remains[i].SetActive(false);
         }
+
+        //for (int i = 0; i < GlobalVariables.Life; i++)
+        //{
+        //    Remains[i].SetActive(true);
+        //}
+
         timeTextAnimationFlag = false;
 
         steps = 0;
-        score = 0;
 
+        stageRopeBurntFlag = false;
+
+        GameOverDialogImage.SetActive(false);
         ScoreDialogImage.SetActive(false);
         TimeToRestartText.SetActive(false);
         StageClearParticle.SetActive(false);
         PanelMovingParticle.SetActive(false);
-        InformationText.SetActive(false);
+        InformationText.SetActive(true);
+
+        NextArrowImage.SetActive(true);
+        NextArrowImage.transform.position = Panel.PanelObject[panelSize - 1, 0].transform.position + new Vector3(panelWidth * 1.25f, panelHeight * 0.5f, 0f);
+        NextArrowImage.GetComponent<Animation>().Play();
 
         StartPanelProcedure();
+
+        oneSecond = 59;
+
     }
 
     /// <summary>
@@ -1587,10 +882,6 @@ public class PanelSystem : MonoBehaviour
         stageToStageFireRope = nextStageToStageFireRope;
         stageCount = stage;
         StageData(stageCount);
-
-        //CreateStage(out NextPanel, false);
-
-        // PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], FuseDirection.Left, Panel.Matrix[currentX, currentY]);
 
     }
 
@@ -1640,18 +931,33 @@ public class PanelSystem : MonoBehaviour
     void Update()
     {
         //-------------------------------------------------------------------------
+        // Lifeの処理
+        //-------------------------------------------------------------------------
+        if ((++oneSecond % 6) == 0)
+        {
+            oneSecond = 0;
+
+            LifeControl();
+        }
+
+        //-------------------------------------------------------------------------
         // 状態遷移
         //-------------------------------------------------------------------------
         switch (gameStatus)
         {
             //-------------------------------------------------------------------------
             case GameStatus.Cleared:
-                if (ScoreDialogImage.GetComponent<ScoreDialog>().OkFlag)
+                if (okFlag)
                 {
-                    ScoreDialogImage.GetComponent<ScoreDialog>().OkFlag = false;
-                    score += ScoreDialogImage.GetComponent<ScoreDialog>().score;
+                    okFlag = false;
 
                     InformationText.GetComponent<Text>().text = "";
+
+                    CalculateScore();
+                    SaveGameData();
+
+                    DisplayScoreText(score);
+                    ScoreDialogImage.SetActive(false);
 
                     gameStatus = GameStatus.Cleared1;
                     StartCoroutine("AnimationStageRopeBurning");
@@ -1660,7 +966,7 @@ public class PanelSystem : MonoBehaviour
 
             case GameStatus.Cleared1:
                 generalCounter++;
-                if (generalCounter >= 60)
+                if (generalCounter >= 1)
                 {
                     generalCounter = 0;
                     if (stageCount % rocketStagePeriod == 0)        // 5ステージ毎にロケット発射
@@ -1670,8 +976,8 @@ public class PanelSystem : MonoBehaviour
                     else
                     {
                         gameStatus = GameStatus.ClearedNormalStage;
-                        TimeText.GetComponent<Text>().text = "TIME : " + timeRemain.ToString("0.000");
-                        StageText.GetComponent<Text>().text = "STAGE : " + stageCount;
+                        DisplayTimeText(timeRemain);
+                        DisplayStageText(stageCount);
                     }
 
                 }
@@ -1679,10 +985,13 @@ public class PanelSystem : MonoBehaviour
 
             case GameStatus.ClearedRocket:
                 generalCounter++;
-                if (generalCounter == 100)
+                //if (generalCounter == 100)
+                if (stageRopeBurntFlag == true)
                 {
+                    stageRopeBurntFlag = false;
                     Missile.transform.Find("RocketFire").gameObject.SetActive(true);
                     FireCracker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+                    FireCracker.SetActive(false);
                 }
                 if (generalCounter >= 200)
                 {
@@ -1711,8 +1020,10 @@ public class PanelSystem : MonoBehaviour
 
             case GameStatus.ClearedNormalStage:
                 generalCounter++;
-                if (generalCounter >= 150)
+                //if (generalCounter >= 150)
+                if (stageRopeBurntFlag == true)
                 {
+                    stageRopeBurntFlag = false;
                     GotoStage(++stageCount);
                     gameStatus = GameStatus.PreStart;
                     generalCounter = 0;
@@ -1725,14 +1036,20 @@ public class PanelSystem : MonoBehaviour
             case GameStatus.ChallengeTime:      // 火花が消えていくが完全に消えるまではまだ生きている
                 const float deltaChallengeTime = 120;
                 FireCracker.transform.localScale = new Vector3(0.2f - 0.2f / deltaChallengeTime * generalCounter, 0.2f - 0.2f / deltaChallengeTime * generalCounter, 1f);
-                Playing();
+                bool state = Playing();
+                if (state)
+                {
+                    break;
+                }
                 generalCounter++;
                 if (generalCounter >= deltaChallengeTime)
                 {
                     StageEndCommonProcedure();
                     generalCounter = 0;
-                    life--;
-                    if (life <= 0)
+                    //GlobalVariables.Life--;
+
+                    bool judge = CalculateLife();
+                    if (judge)
                     {
                         gameStatus = GameStatus.GameEnd;
                     }
@@ -1741,11 +1058,21 @@ public class PanelSystem : MonoBehaviour
                         GameOver();
                         gameStatus = GameStatus.GameOver;
                     }
+
+                    //if (GlobalVariables.Life - 1 <= 0)
+                    //{
+                    //    gameStatus = GameStatus.GameEnd;
+                    //}
+                    //else
+                    //{
+                    //    GameOver();
+                    //    gameStatus = GameStatus.GameOver;
+                    //}
                 }
                 break;
 
             case GameStatus.GameOver:
-                const float deltaGameOverAnimationTime = 60;
+                const float deltaGameOverAnimationTime = 20;
                 generalCounter++;
                 if (generalCounter >= deltaGameOverAnimationTime)
                 {
@@ -1757,13 +1084,13 @@ public class PanelSystem : MonoBehaviour
 
             case GameStatus.GameOver2:
                 generalCounter++;
-                if (generalCounter >= 30)
+                if (generalCounter >= 60)
                 {
                     generalCounter = 0;
                     StartStage();
                     gameStatus = GameStatus.PreStart;
                     InformationText.GetComponent<Text>().text = "";
-                    MainCamera.GetComponent<Animator>().Play("CameraBlurOff");
+                    //MainCamera.GetComponent<Animator>().Play("CameraBlurOff");
                 }
                 break;
 
@@ -1774,99 +1101,76 @@ public class PanelSystem : MonoBehaviour
                     GameEnd();
                     gameStatus = GameStatus.GameEnd2;
                     generalCounter = 0;
-                    RestartButton.SetActive(true);
+
+                    GameOverDialogImage.GetComponent<GameOverDialog>().StartDialogAnimation();
                     TimeToRestartText.SetActive(true);
-                    restartTime = DateTime.Now;
-                    RestartButton.transform.GetChild(0).GetComponent<Text>().text = "動画を観てすぐに始める";
+                    //GameOverDialogImage.SetActive(true);
+                    //RestartButton.SetActive(true);
+                    //GlobalVariables.RestartTime = DateTime.Now;
+                    RestartButton.transform.GetChild(0).GetComponent<Text>().text = TextResources.Text[(int)TextNumber.WATCH_MOVIE_TO_START, (int)GlobalVariables.Language]; // "動画を観てすぐに始める";
+                    RestartButton.transform.GetChild(0).GetComponent<Text>().font.name = GlobalVariables.LanguageFont;
                 }
                 break;
 
             case GameStatus.GameEnd2:
-                int TimeToStart = 10;   // minutes.
                 generalCounter++;
-
-                int newlife = 0;
-                int remainTime = DateTime.Now.Subtract(restartTime).Minutes;
-                TimeSpan ts = DateTime.Now - restartTime;   //DateTime の差が TimeSpan として返る
-                {
-                    if (TimeToStart * 60 * 1 <= ts.TotalSeconds)
-                    {
-                        newlife = 1;
-                        RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
-                    }
-                    if (TimeToStart * 60 * 2 <= ts.TotalSeconds)
-                    {
-                        newlife = 2;
-                    }
-                    if (TimeToStart * 60 * 3 <= ts.TotalSeconds)
-                    {
-                        newlife = 3;
-                        TimeToRestartText.SetActive(false);
-                    }
-                    string str = "ライフ復活まであと " + (TimeToStart - 1 - ((int)ts.TotalMinutes % TimeToStart)).ToString("00") + ":" + (60 - 1 - ((int)ts.TotalSeconds % 60)).ToString("00");
-                    TimeToRestartText.GetComponent<Text>().text = str;
-
-                    for (int i = 0; i < newlife; i++)
-                    {
-                        Remains[i].SetActive(true);
-                    }
-                    if (newlife > life)
-                    {
-                        PanelMovingParticle.SetActive(false);
-                        PanelMovingParticle.SetActive(true);
-                        PanelMovingParticle.transform.position = Remains[newlife - 1].transform.position;
-                    }
-                    life = newlife;
-                }
-
-                //if (lapsedTime <= 0)
-                //{
-                //    RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
-                //    if (life <= 2)
-                //    {
-                //        life++;
-                //        Remains[life - 1].SetActive(true);
-                //        restartTime = DateTime.Now;
-                //        PanelMovingParticle.SetActive(false);
-                //        PanelMovingParticle.SetActive(true);
-                //        PanelMovingParticle.transform.position = Remains[life - 1].transform.position;
-                //    }
-                //    if (life == 3)
-                //    {
-                //        TimeToRestartText.SetActive(false);
-                //    }
-                //}
 
                 if (restartFlag == true)    // 再スタートボタンが押された
                 {
-                    if (life == 0) life = 1;        // とりあえずデバッグ用
+
+                    GlobalVariables.RestartTime = GlobalVariables.RestartTime.AddMinutes(-GlobalVariables.TimeToStart);   //ライフ1つ増やす(TBD)
 
                     restartFlag = false;
-                    RestartButton.SetActive(false);
+
+                    GameOverDialogImage.SetActive(false);
+                    //RestartButton.SetActive(false);
                     TimeToRestartText.SetActive(false);
 
                     generalCounter = 0;
                     StartStage();
                     gameStatus = GameStatus.PreStart;
                     InformationText.GetComponent<Text>().text = "";
-
-
-                    //life = 3;
-                    //Remains[0].SetActive(true);
-                    //Remains[1].SetActive(true);
-                    //Remains[2].SetActive(true);
                 }
                 break;
 
             case GameStatus.PreStart:
                 generalCounter++;
-                if (generalCounter >= 30)
+
+                FireCracker.SetActive(true);
+                FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f); // これ効果なかった(アニメーターが何故か走っていて優先される
+                PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], FuseDirection.Left, Panel.Matrix[currentX, currentY]);
+
+                NextArrowImage.SetActive(true);
+                NextArrowImage.transform.position = Panel.PanelObject[panelSize - 1, 0].transform.position + new Vector3(panelWidth * 1.25f, panelHeight * 0.5f, 0f);
+
+                if (generalCounter == 1)
                 {
                     //FireCracker.GetComponent<Animator>().SetBool("FireCrackerAppearFlag", true);
+                    PanelSubSystem.GetComponent<PanelObject>().SpeedUpFlag = false; // スピードダウン
+                    DisplayStageText(stageCount);
+                    DisplayTimeText(timeRemain);
+
+                    InformationText.GetComponent<Text>().text = "STAGE " + stageCount;
+                    InformationText.GetComponent<Animation>().Stop();
+                    InformationText.GetComponent<Animation>().Play("PopUpTextAnimation");
+                }
+                else if (generalCounter == (30 + 90))
+                {
+                    InformationText.GetComponent<Text>().text = "START";
+                    InformationText.GetComponent<Animation>().Stop();
+                    InformationText.GetComponent<Animation>().Play("PopUpTextAnimation");
+                }
+                else if (generalCounter >= (30 + 250))  // ここでユーザーにパネル構成を考えさせる時間を与える
+                {
+                    InformationText.GetComponent<Text>().text = "";
+
                     generalCounter = 0;
                     gameStatus = GameStatus.Start;
-                    PanelSubSystem.GetComponent<PanelObject>().SpeedUpFlag = false; // スピードダウン
-                    StageText.GetComponent<Text>().text = "STAGE : " + stageCount;
+                }
+                if (Input.GetMouseButtonDown(0))    // キャンセル可能
+                {
+                    generalCounter = 0;
+                    gameStatus = GameStatus.Start;
                 }
                 break;
 
@@ -1876,21 +1180,20 @@ public class PanelSystem : MonoBehaviour
                 {
                     steps = 0;
 
-                    Remains[life - 1].SetActive(false);
+                    //Remains[GlobalVariables.Life - 1].SetActive(false);
                     generalCounter = 0;
                     if (explosionPrefab != null)
                     {
                         Destroy(explosionPrefab);
                     }
-                    Animator anime = MainCamera.GetComponent<Animator>();
-                    anime.Play("GlowAnimation");
+                    //Animator anime = MainCamera.GetComponent<Animator>();
+                    //anime.Play("GlowAnimation");
                     gameStatus = GameStatus.Play;
-                                                                                    //FireCracker.GetComponent<Animator>().SetBool("FireCrackerAppearFlag", false);
+                    //FireCracker.GetComponent<Animator>().SetBool("FireCrackerAppearFlag", false);
                     Panel.PanelObject[currentX, currentY].GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.8f, 0.8f);  // 燃え中のパネル
                     pushButtonCount = 0;    // 強制的にプッシュをリリースする
                     PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], FuseDirection.Left, Panel.Matrix[currentX, currentY]);
                     PanelSubSystem.GetComponent<PanelObject>().StartFlag = true;
-                    FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f); // これ効果なかった(アニメーターが何故か走っていて優先される
 
                     Missile.GetComponent<Rigidbody>().useGravity = false;
                     Missile.transform.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
@@ -1913,16 +1216,165 @@ public class PanelSystem : MonoBehaviour
 
             default:
                 // Nothing to do.
-                break;  
+                break;
         }
 
     }
 
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-    void Playing()
+    /// <summary>
+    /// 
+    /// </summary>
+    void LifeControl()
+    {
+        int timeToStart = GlobalVariables.TimeToStart;   // minutes.
+        DateTime now = DateTime.Now;
+        TimeSpan ts = now - GlobalVariables.RestartTime;    //DateTime の差が TimeSpan として返る
+        if (ts.TotalSeconds > GlobalVariables.TimeToStart * 60 * GlobalVariables.LifeMax)    // Lifeが満タンの時
+        {
+            GlobalVariables.RestartTime = now.AddSeconds(-GlobalVariables.TimeToStart * 60 * GlobalVariables.LifeMax);
+        }
+
+        int newlife = 0;
+        int remainTime = DateTime.Now.Subtract(GlobalVariables.RestartTime).Minutes;
+        if (timeToStart * 60 * 1 <= ts.TotalSeconds)
+        {
+            newlife = 1;
+            RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
+        }
+        if (timeToStart * 60 * 2 <= ts.TotalSeconds)
+        {
+            newlife = 2;
+        }
+        if (timeToStart * 60 * 3 <= ts.TotalSeconds)
+        {
+            newlife = 3;
+            TimeToRestartText.SetActive(false);
+        }
+        string str = TextResources.Text[(int)TextNumber.TIME_TO_RESTART, (int)GlobalVariables.Language] + (timeToStart - 1 - ((int)ts.TotalMinutes % timeToStart)).ToString("00") + ":" + (60 - 1 - ((int)ts.TotalSeconds % 60)).ToString("00");
+        TimeToRestartText.GetComponent<Text>().text = str;
+        TimeToRestartText.GetComponent<Text>().font.name = GlobalVariables.LanguageFont;
+
+        DisplayLife(newlife);
+
+        GlobalVariables.Life = newlife;
+        PlayerPrefs.SetInt("LIFE", GlobalVariables.Life);
+        PlayerPrefs.SetString("RESTART_TIME", GlobalVariables.RestartTime.ToBinary().ToString());
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void DisplayLife(int life)
+    {
+        int offset = 1;
+
+        //if (gameStatus != GameStatus.GameEnd2)
+        //{
+        //    offset = 2;
+        //}
+
+        for (int i = 0; i < GlobalVariables.LifeMax; i++)
+        {
+            if (i <= life - offset)    // 現在の火花の数の1少ない数を表示
+            {
+                Remains[i].SetActive(true);
+            }
+            else
+            {
+                Remains[i].SetActive(false);
+            }
+        }
+
+        if (life > GlobalVariables.Life)
+        {
+            if (life - offset >= 0)
+            {
+                PanelMovingParticle.SetActive(false);
+                PanelMovingParticle.SetActive(true);
+                PanelMovingParticle.transform.position = Remains[life - offset].transform.position;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void SaveGameData()
+    {
+        // ゲームデータをセーブ
+        PlayerPrefs.SetInt("HI_SCORE" + stageCount, stageParameter[stageCount].HiScore);
+        PlayerPrefs.SetInt("CLEAR_LEVEL" + stageCount, stageParameter[stageCount].ClearLevel);
+        PlayerPrefs.SetInt("CLEARED" + stageCount, stageParameter[stageCount].Cleared);
+        PlayerPrefs.SetFloat("REMAIN_TIME" + stageCount, stageParameter[stageCount].RemainTime);
+        PlayerPrefs.SetInt("CURRENT_STAGE", stageCount);
+        PlayerPrefs.SetInt("LIFE", GlobalVariables.Life);
+        PlayerPrefs.Save();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void CalculateScore()
+    {
+        int currentScore = ScoreDialogImage.GetComponent<ScoreDialog>().score;
+
+        if (stageParameter[stageCount].HiScore<currentScore)
+        {
+            stageParameter[stageCount].HiScore = currentScore;
+        }
+
+        stageParameter[stageCount].ClearLevel = ScoreDialogImage.GetComponent<ScoreDialog>().clearLevel;
+        stageParameter[stageCount].Cleared = 1;
+        stageParameter[stageCount].RemainTime = ScoreDialogImage.GetComponent<ScoreDialog>().remainTime;
+        if (clearedStage < stageCount)
+        {
+            clearedStage = stageCount;
+        }
+
+        currentScore = 0;
+        for (int i = (int) Stage.S_1; i <= clearedStage; i++)
+        {
+            currentScore += stageParameter[i].HiScore;
+        }
+        if (currentScore > hiScore)
+        {
+            hiScore = currentScore;
+        }
+        score = hiScore;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stage"></param>
+    void DisplayStageText(int stage)
+    {
+        StageText.GetComponent<Text>().text = "STAGE " + stage;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="score"></param>
+    void DisplayScoreText(int score)
+    {
+        ScoreText.GetComponent<Text>().text = "SCORE\n" + score;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="time"></param>
+    void DisplayTimeText(float time)
+    {
+        TimeText.GetComponent<Text>().text = "TIME\n" + time.ToString("0.000");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    bool Playing()
     {
         Vector3 clickPosition;
         int i = 0;
@@ -1930,14 +1382,15 @@ public class PanelSystem : MonoBehaviour
         float delta = (panelHeight + panelWidth) / 2f / 4f;    // 1/60秒ごとのパネル移動距離
         MoveDirection tapDirection = MoveDirection.None;
 
-        TimeText.GetComponent<Text>().text = "TIME : " + timeRemain.ToString("0.000");
+        DisplayTimeText(timeRemain);
 
         timeRemain -= 1f / 60f;
         if (timeRemain <= 0f)
         {
             StageEndCommonProcedure();
-            life--;
-            if (life <= 0)
+            //GlobalVariables.Life--;
+            bool judge = CalculateLife();
+            if (judge)
             {
                 gameStatus = GameStatus.GameEnd;
             }
@@ -1946,9 +1399,20 @@ public class PanelSystem : MonoBehaviour
                 GameOver("TIME OUT");
                 gameStatus = GameStatus.GameOver;
             }
-            timeRemain = 0f;
 
-            return;
+            //if (GlobalVariables.Life <= 0)
+            //{
+            //    gameStatus = GameStatus.GameEnd;
+            //}
+            //else
+            //{
+            //    GameOver("TIME OUT");
+            //    gameStatus = GameStatus.GameOver;
+            //}
+            timeRemain = 0f;
+            DisplayTimeText(timeRemain);
+
+            return true;
         }
 
         if ((timeRemain <= 5f) && (!timeTextAnimationFlag))   // タイマーが5以下になったらタイマーをハートビートさせる
@@ -1965,7 +1429,10 @@ public class PanelSystem : MonoBehaviour
 
         if ((PanelSubSystem.GetComponent<PanelObject>().GetFuseBurningCompletion() == true) && (gameStatus == GameStatus.Play))
         {
-            JudgeFuseConnection();
+            if (JudgeFuseConnection())
+            {
+                return true;    // ゲームオーバーかステージクリア
+            }
         }
 
         if ((PanelDirection != MoveDirection.None) && (MovingPanel != null))    // パネル移動アニメーション中か？
@@ -2003,13 +1470,16 @@ public class PanelSystem : MonoBehaviour
                 }
                 PanelMovingParticle.transform.position = MovingPanel.transform.position;
 
-                return;
+                return false;
             }
             else
             {
-                PanelMovingParticle.SetActive(false);
-                PanelMovingParticle.SetActive(true);
-                PanelMovingParticle.transform.position = tapObject.transform.position;
+                if (tapObject.name.Substring(0, 2) != "No" && MovingPanel.name.Substring(0, 5) == "Plain")   // "NoPanel"を掴んで移動したら無効    Y.Ida added 2017.10.08
+                {
+                    PanelMovingParticle.SetActive(false);
+                    PanelMovingParticle.SetActive(true);
+                    PanelMovingParticle.transform.position = tapObject.transform.position;
+                }
                 // パネルオブジェクトの入れ替え
                 GameObject temp_mat;
                 temp_mat = Panel.PanelObject[swapX1, swapY1];
@@ -2039,10 +1509,12 @@ public class PanelSystem : MonoBehaviour
 
                 if (gameStatus == GameStatus.ChallengeTime)
                 {
-                    JudgeFuseConnection();
+                    if (JudgeFuseConnection())
+                    {
+                        return true;    // ゲームオーバーかステージクリア
+                    }
                 }
             }
-
         }
 
 #if !PUSH_CONTROL
@@ -2241,15 +1713,21 @@ public class PanelSystem : MonoBehaviour
                                 {
                                     pushButtonCount = 0;    // 入力キャンセル
 
-                                    return;
+                                    return false;
                                 }
                                 else if (tapObject.name.Substring(0, 5) == "Plain")   // "PlainPanel"
                                 {
                                     tapObject.GetComponent<Animation>().Stop();
                                 }
+                                if (tapObject.name.Substring(0, 2) == "No")   // NoPanel    Y.Ida added 2017.10.08
+                                {
+                                    pushButtonCount = 0;    // 入力キャンセル
+
+                                    return false;
+                                }
                                 tapObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.8f, 0.0f);  // 掴んだパネル
  
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -2284,7 +1762,7 @@ public class PanelSystem : MonoBehaviour
                     {
                         pushButtonCount = 0;    // 一度パネルから指を離された（パネル移動をキャンセルした）
                     }
-                    return;
+                    return false;
                 }
                 else if (Mathf.Abs(deltax) > Mathf.Abs(deltay))
                 {
@@ -2316,12 +1794,12 @@ public class PanelSystem : MonoBehaviour
             }
         }
 #endif
-        return;
+        return false;
 
         FOUND_OBJECT:
         PanelType temp;
 
-        Debug.Log("x:" + i + " y:" + j);
+        //Debug.Log("x:" + i + " y:" + j);
 
         if ((i != 0) && (tapDirection == MoveDirection.Left))
         {
@@ -2349,9 +1827,9 @@ public class PanelSystem : MonoBehaviour
                 }
                 steps++;
 
-                DebugStatus();
+                //DebugStatus();
 
-                return;
+                return false;
             }
         }
         if ((j != 0) && (tapDirection == MoveDirection.Down))
@@ -2381,9 +1859,9 @@ public class PanelSystem : MonoBehaviour
                 }
                 steps++;
 
-                DebugStatus();
+                //DebugStatus();
 
-                return;
+                return false;
 
             }
         }
@@ -2414,9 +1892,9 @@ public class PanelSystem : MonoBehaviour
                 }
                 steps++;
 
-                DebugStatus();
+                //DebugStatus();
 
-                return;
+                return false;
 
             }
         }
@@ -2447,14 +1925,16 @@ public class PanelSystem : MonoBehaviour
 
                 steps++;
 
-                DebugStatus();
+                //DebugStatus();
 
-                return;
+                return false;
 
             }
         }
 
         PanelDirection = MoveDirection.None;
+
+        return false;
     }
 
     //--------------------------------------------------------------------------
@@ -2484,7 +1964,7 @@ public class PanelSystem : MonoBehaviour
     //　導火線がパネルの中で燃え尽きた時に導火線が繋がっているかどうか判断する
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
-    public void JudgeFuseConnection()
+    public bool JudgeFuseConnection()
     {
         PanelType currentType = Panel.Matrix[currentX, currentY];
         FuseDirection nextStartDirection = FuseDirection.Up;    // Just in case.
@@ -2493,7 +1973,7 @@ public class PanelSystem : MonoBehaviour
 
         if ((PanelDirection != MoveDirection.None) && (MovingPanel != null))    // パネル移動アニメーション中か？
         {
-            return;
+            return false;
         }
 
         tempx = currentX; tempy = currentY;
@@ -2725,7 +2205,7 @@ public class PanelSystem : MonoBehaviour
                     // ロケットが右下にあると仮定したら
                     StageClear();
                     //GotoStage();
-                    return;
+                    return true;
                 }
 
                 nextStartDirection = FuseDirection.Left;
@@ -2813,7 +2293,7 @@ public class PanelSystem : MonoBehaviour
             }
         }
 
-        DebugStatus1(nextStartDirection);
+        //DebugStatus1(nextStartDirection);
 
         //-------------------------------------------------------------------------------debug
         for (int iii = 0; iii < Panel.Size; iii++)
@@ -2830,7 +2310,8 @@ public class PanelSystem : MonoBehaviour
             }
         }
         //Panel.PanelObject[currentX, currentY].GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.8f, 0.8f);  // 燃え中のパネル
-         //-------------------------------------------------------------------------------debug
+        //-------------------------------------------------------------------------------debug
+        return false;
    }
 
     /// <summary>
@@ -2877,10 +2358,15 @@ public class PanelSystem : MonoBehaviour
     {
         //       Debug.Log("x:" + currentX + "y:" + currentY);
         InformationText.GetComponent<Text>().text = str;
-        Animator anime = MainCamera.GetComponent<Animator>();
-        anime.Play("CameraBlur");
+
+        InformationText.GetComponent<Animation>().Stop();
+        InformationText.GetComponent<Animation>().Play("PopUpTextAnimation");
+
+        //Animator anime = MainCamera.GetComponent<Animator>();
+        //anime.Play("CameraBlur");
 
         PanelSubSystem.GetComponent<PanelObject>().StartFlag = false;       // サブシステムを停止する
+
     }
 
     /// <summary>
@@ -2897,17 +2383,45 @@ public class PanelSystem : MonoBehaviour
                 Panel.PanelObject[i, j].GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(UnityEngine.Random.value * 100f, UnityEngine.Random.value * 100f, UnityEngine.Random.value * 100f));
             }
         }
+
+        NextArrowImage.SetActive(false);
     }
 
+    /// <summary>
+    /// １機死んだ時
+    ///  ret = true : ゲームオーバー
+    ///  ret = false : ミス（1機失う）
+    /// </summary>
+    bool CalculateLife()
+    {
+        DateTime now = DateTime.Now;
+        TimeSpan ts = now - GlobalVariables.RestartTime;    //DateTime の差が TimeSpan として返る
+        if (ts.TotalSeconds > GlobalVariables.TimeToStart * 60 * GlobalVariables.LifeMax)    // Lifeが満タンの時
+        {
+            GlobalVariables.RestartTime = DateTime.Now.AddSeconds(-GlobalVariables.TimeToStart * 60 * GlobalVariables.LifeMax);
+        }
+
+        GlobalVariables.RestartTime = GlobalVariables.RestartTime.AddMinutes(GlobalVariables.TimeToStart);
+        PlayerPrefs.SetString("RESTART_TIME", GlobalVariables.RestartTime.ToBinary().ToString());
+
+        ts = now - GlobalVariables.RestartTime; // 1機失った後の時間
+        if (ts.TotalSeconds < GlobalVariables.TimeToStart * 60)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     void DebugStatus()
     {
-        return;
         Debug.Log("CurrentX:" + currentX + "y:" + currentY);
 
     }
     void DebugStatus1(FuseDirection nextStartDirection)
     {
-        return;
         Debug.Log("CurrentX:" + currentX + "y:" + currentY);
         Debug.Log("CurrentFusePanelDirection:" + CurrentFusePanelDirection + "  nextStartDirection:" + nextStartDirection);
 
@@ -2932,58 +2446,57 @@ public class PanelSystem : MonoBehaviour
     /// </summary>
     void GameEnd()
     {
-            //       Debug.Log("x:" + currentX + "y:" + currentY);
+        //       Debug.Log("x:" + currentX + "y:" + currentY);
         InformationText.GetComponent<Text>().text = "GAME OVER";
-        Animator anime = MainCamera.GetComponent<Animator>();
-        anime.Play("CameraBlur");
-        InformationText.GetComponent<Animation>().Play();
+        //Animator anime = MainCamera.GetComponent<Animator>();
+        //anime.Play("CameraBlur");
 
-        explosionPrefab = Instantiate(Explosion, new Vector3(0f, 0f, 0f), Quaternion.Euler(0f, 0f, 0f)) as GameObject;
+        Animator anime = MainCamera.GetComponent<Animator>();
+        anime.Rebind();
+        anime.Play("CameraShocked");
+
+        InformationText.GetComponent<Animation>().Play("TextAnimation");
+
+        explosionPrefab = Instantiate(Explosion, new Vector3(panelWidth * 1f, panelHeight * 1f, 0f), Quaternion.Euler(0f, 0f, 0f)) as GameObject;
 
         for (int i = 0; i < Panel.Size; i++)
         {
             for (int j = 0; j < Panel.Size; j++)
             {
-                //Panel.PanelObject[i, j].GetComponent<Rigidbody2D>().gravityScale = 3f;
-                //Panel.PanelObject[i, j].GetComponent<Rigidbody2D>().AddForce(new Vector2(((float)i - Panel.Size / 2f) * 40f, ((float)j - Panel.Size / 2f) * 40f));
-                //float turn = Input.GetAxis("Horizontal");
-                //Panel.PanelObject[i, j].GetComponent<Rigidbody2D>().AddRelativeForce.AddRelativeTorque(float x, float y, Inpulse ForceMode mode = ForceMode.Force);
-                //float turn = Input.GetAxis("Vertical");
-                //Panel.PanelObject[i, j].GetComponent<Rigidbody2D>().AddTorque(transform.up * torque * turn);
-                //float turn = Input.GetAxis("Horizontal");
-                //Panel.PanelObject[i, j].GetComponent<Rigidbody2D>().AddTorque(transform.up * torque * turn);
                 Panel.PanelObject[i, j].GetComponent<Rigidbody>().useGravity = true;
                 Panel.PanelObject[i, j].GetComponent<Rigidbody>().AddForce(new Vector3(((float)i - Panel.Size / 2f) * 40f, ((float)j - Panel.Size / 2f) * 40f, 0));
                 Panel.PanelObject[i, j].GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(UnityEngine.Random.value * 100f, UnityEngine.Random.value * 100f, UnityEngine.Random.value * 100f));
 
             }
         }
+
+        NextArrowImage.SetActive(false);
+
         Missile.GetComponent<Rigidbody>().useGravity = true;
         Missile.GetComponent<Rigidbody>().AddForce(new Vector3(200f, 120f, 0f));
         Missile.GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(UnityEngine.Random.value * 100f, UnityEngine.Random.value * 100f, UnityEngine.Random.value * 100f));
 
-
     }
 
-
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
     void StageClear()
     {
         TimeText.GetComponent<Animation>().Stop();
         TimeText.GetComponent<Text>().color = new Color(1.0f, 1.0f, 1.0f);
         timeTextAnimationFlag = false;
 
+        explosionPrefab = Instantiate(ExplosionM, FireCracker.transform.position, Quaternion.Euler(0f, 0f, 0f)) as GameObject;
+
+        StartCoroutine("AnimateSpinPanel");
+
         //        FireCracker.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-        ScoreDialogImage.GetComponent<ScoreDialog>().StartDialogAnimation(timeRemain, steps);   // スコアダイアログを表示
+        ScoreDialogImage.GetComponent<ScoreDialog>().StartDialogAnimation(timeRemain, steps, excellentScore, stageParameter[stageCount].HiScore);   // スコアダイアログを表示
 
-        InformationText.SetActive(true);
         InformationText.GetComponent<Text>().text = "STAGE " + stageCount + " CLEAR";
-        InformationText.GetComponent<Animation>().Play();
-
-        // StageClearParticle.SetActive(true);
+        InformationText.GetComponent<Animation>().Stop();
+        InformationText.GetComponent<Animation>().Play("TextAnimation");
 
         gameStatus = GameStatus.Cleared;
 
@@ -2996,8 +2509,8 @@ public class PanelSystem : MonoBehaviour
         else if ((stageCount % rocketStagePeriod) == 0)  // ロケット発射
         {
             Missile.transform.position = new Vector3(
-                nextStageToStageFireRope[nextStageToStageFireRope.Length - 1].transform.position.x + (Missile.GetComponent<SpriteRenderer>().bounds.size.x / 2f), 
-                nextStageToStageFireRope[nextStageToStageFireRope.Length - 1].transform.position.y + (Missile.GetComponent<SpriteRenderer>().bounds.size.y / 2f),
+                 nextStageToStageFireRope[nextStageToStageFireRope.Length - 1].transform.position.x + (Missile.GetComponent<SpriteRenderer>().bounds.size.x / 2f), 
+                 nextStageToStageFireRope[nextStageToStageFireRope.Length - 1].transform.position.y + (Missile.GetComponent<SpriteRenderer>().bounds.size.y / 2f),
                 0f);
         }
         else if ((stageCount % rocketStagePeriod) >= 1) 
@@ -3017,8 +2530,10 @@ public class PanelSystem : MonoBehaviour
         PanelSubSystem.GetComponent<PanelObject>().RemoveFireCrackerFromParent();
         PanelSubSystem.GetComponent<PanelObject>().StartFlag = false;
 
-        //       StartCoroutine("AnimationStageRopeBurning");
+        FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
 
+        NextArrowImage.SetActive(false);
+        //       StartCoroutine("AnimationStageRopeBurning");
     }
     // StartBurning(Direction, PanelType);
     // これをパネルのプレハブ(PlainPanel)のクラスメソッドに実装する。
@@ -3042,10 +2557,46 @@ public class PanelSystem : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    void Restart()
+    public void Restart()
     {
         restartFlag = true;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void GoNext()
+    {
+        okFlag = true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void GoHome(bool ScoreSave = true)
+    {
+        if (ScoreSave)  // ステージクリアした時
+        {
+            CalculateScore();
+        }
+        else // ゲームオーバーの時
+        {   
+            //PlayerPrefs.SetString("RESTART_TIME", GlobalVariables.RestartTime.ToBinary().ToString());
+        }
+        SaveGameData();
+        StartCoroutine("FadeOutScreen");
+
+        //SceneManager.LoadScene("TitleMain");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void Share()
+    {
+        UniStoreOpener.OpenStore();
+    }
+
 
     /// <summary>
     /// //////////////////////////////////////////////
@@ -3056,6 +2607,7 @@ public class PanelSystem : MonoBehaviour
         Vector3 deltax = new Vector3(panelWidth * 11f / stageToStageFireRope.Length, 0f, 0f);
 
         FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
+        FireCracker.transform.GetChild(0).gameObject.SetActive(false);
 
         for (int i = 0; i < stageToStageFireRope.Length; i++)
         {
@@ -3114,11 +2666,62 @@ public class PanelSystem : MonoBehaviour
                 Missile.transform.position -= deltax;
             }
 
+            if (Input.GetMouseButton(0))    // キャンセル
+            {
+                continue;
+            }
             yield return new WaitForEndOfFrame();
 
         }
+        stageRopeBurntFlag = true;
+        FireCracker.transform.GetChild(0).gameObject.SetActive(true);
+
         yield break;
 
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator AnimateSpinPanel()
+    {
+        for (int i = 0; i < Panel.Size; i++)
+        {
+            for (int j = 0; j < Panel.Size; j++)
+            {
+                if ((Panel.Matrix[i, j] != PanelType.Disabled) && (Panel.Matrix[i, j] != PanelType.Fixed) && (Panel.Matrix[i, j] != PanelType.Nothing))
+                {
+                    Panel.PanelObject[i, j].GetComponent<Animation>().Play("PanelSpinAnimation");
+                }
+                yield return new WaitForEndOfFrame();
+            }
+        }
+
+        yield break;
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="sec"></param>
+    /// <returns></returns>
+    public IEnumerator FadeOutScreen()
+    {
+        float sec = 0.5f;
+        for (float i = 0; i < 1f; i += 1f / (sec * 60))
+        {
+            // camera.orthographicSize /= 1.1f;
+            FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, i);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        SceneManager.LoadScene("TitleMain");
+
+        yield break;
     }
 
 }

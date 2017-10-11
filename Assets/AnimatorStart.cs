@@ -18,11 +18,14 @@ public class AnimatorStart : MonoBehaviour {
     public new Camera camera;
     public GameObject SkipButton;
     public GameObject FadeOutPanel;
+    public GameObject AlertText;
 
     private int animationCounter;
     private LineRenderer LineDrawer;
     private bool gameStartFlag;
     private int stageCount;
+
+    private bool alertFlag;
 
     // Use this for initialization
     void Start () {
@@ -32,22 +35,32 @@ public class AnimatorStart : MonoBehaviour {
         gameStartFlag = false;
         stageCount = 1;
 
+        alertFlag = false;
+
         TargetText.GetComponent<Text>().text = "";
 
         Button btn = SkipButton.GetComponent<Button>();
         btn.onClick.AddListener(SkipAnimation);
 
+        FadeOutPanel.GetComponent<Image>().color = new Color(0.0f, 0f, 0f, 1f);
 
         City1.GetComponent<Animation>().Play();
-        gameObject.GetComponent<Animation>().Play("OpeningAnimation");
 
-        StartCoroutine("DisplayText");
-        StartCoroutine("DisplayTimeText");
+        StartCoroutine("DisplayAlertText");
+
     }
 
     // Update is called once per frame
     void Update () {
 
+        if (alertFlag)
+        {
+            alertFlag = false;
+            gameObject.GetComponent<Animation>().Play("OpeningAnimation");
+
+            StartCoroutine("DisplayText");
+            StartCoroutine("DisplayTimeText");
+        }
 
         if (animationCounter >= 0)
         {
@@ -56,7 +69,7 @@ public class AnimatorStart : MonoBehaviour {
         
         if (gameStartFlag)
         {
-            // ゲームメインに遷移
+            gameStartFlag = true;
         }
 
 
@@ -79,7 +92,7 @@ public class AnimatorStart : MonoBehaviour {
     /// </summary>
     void SkipAnimation()
     {
-        // Nothing to do.
+        gameStartFlag = true;
     }
 
     /// <summary>
@@ -113,6 +126,35 @@ public class AnimatorStart : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator DisplayAlertText()
+    {
+        AlertText.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        AlertText.SetActive(false);
+        yield return new WaitForSeconds(0.5f);
+        AlertText.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        AlertText.SetActive(false);
+        yield return new WaitForSeconds(0.5f);
+        AlertText.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        AlertText.SetActive(false);
+        yield return new WaitForSeconds(0.5f);
+
+        alertFlag = true;
+
+        for (float i = 1; i > 0f; i -= 0.04f)
+        {
+            FadeOutPanel.GetComponent<Image>().color = new Color(0.1f, 0f, 0f, i);
+            yield return new WaitForEndOfFrame();
+        }
+        yield break;
+
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -319,7 +361,7 @@ public class AnimatorStart : MonoBehaviour {
             counter++;
             TimeText.GetComponent<Text>().text = "TIME LAPSED : " + counter;
 
-            if (Input.GetMouseButton(0))
+            if (gameStartFlag == true)
             {
 
                 for (float i = 0; i < 1f; i += 0.02f)
@@ -329,7 +371,7 @@ public class AnimatorStart : MonoBehaviour {
 
                     yield return new WaitForEndOfFrame();
                 }
-                gameStartFlag = true;
+                gameStartFlag = false;
                 SceneManager.LoadScene("GameMain");
 
                 yield break;
@@ -348,7 +390,6 @@ public class AnimatorStart : MonoBehaviour {
             yield return new WaitForEndOfFrame();
         }
 
-        gameStartFlag = true;
         SceneManager.LoadScene("GameMain");
 
         yield break;

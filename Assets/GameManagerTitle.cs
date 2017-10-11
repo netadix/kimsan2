@@ -5,6 +5,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+enum CurrentScene
+{
+    Idle = 0,
+    GameMain,
+    StageSelect,
+    Ranking,
+}
+
 public class GameManagerTitle : MonoBehaviour {
 
     public GameObject RestartButton;
@@ -16,10 +24,14 @@ public class GameManagerTitle : MonoBehaviour {
     public GameObject TimeToRestartText;
     public GameObject PanelMovingParticle;
     public GameObject ScoreText;
-   
+    public GameObject FadeOutPanel;
+
     private GameObject [] Remains;
     private int oneSecond;
-
+    private Color buttonDefaultColor;
+    private Color buttonTextDefaultColor;
+    private bool animationEndFlag;
+    private CurrentScene currentStage;
 
     // Use this for initialization
     void Start() {
@@ -91,10 +103,58 @@ public class GameManagerTitle : MonoBehaviour {
 
         oneSecond = 59;
 
+        string language = Application.systemLanguage.ToString();
+        language = "English";
+        if (language == "Japanese")
+        {
+            GlobalVariables.Language = LanguageType.Japanese;
+            GlobalVariables.LanguageFont = "AldotheApache";
+        }
+        else if (language == "English")
+        {
+            GlobalVariables.Language = LanguageType.English;
+            GlobalVariables.LanguageFont = "AldotheApache";
+        }
+        else
+        {
+            GlobalVariables.Language = LanguageType.Other;
+            GlobalVariables.Language = LanguageType.English;  //他の言語は英語
+            GlobalVariables.LanguageFont = "AldotheApache";
+        }
+
+        buttonDefaultColor = StageSelectButton.GetComponent<Image>().color;
+        buttonTextDefaultColor = StageSelectButton.transform.GetChild(0).GetComponent<Text>().color;
+
+        FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+
+        animationEndFlag = false;
+        currentStage = CurrentScene.Idle;
     }
 
     // Update is called once per frame
     void Update() {
+        //-------------------------------------------------------------------------
+        // Stage遷移
+        //-------------------------------------------------------------------------
+        if (animationEndFlag)
+        {
+            switch (currentStage)
+            {
+                case CurrentScene.GameMain:
+                    SceneManager.LoadScene("OpeningAnimation");
+                    break;
+
+                case CurrentScene.StageSelect:
+                    SceneManager.LoadScene("StageSelect");
+                    break;
+
+                case CurrentScene.Ranking:
+                    SceneManager.LoadScene("Ranking");
+                    break;
+
+            }
+        }
+
         //-------------------------------------------------------------------------
         // Lifeの処理
         //-------------------------------------------------------------------------
@@ -103,56 +163,25 @@ public class GameManagerTitle : MonoBehaviour {
             oneSecond = 0;
             LifeControl();
 
-            //    int timeToStart = GlobalVariables.TimeToStart;   // minutes.
-            //    DateTime now = DateTime.Now;
-            //    TimeSpan ts = now - GlobalVariables.RestartTime;    //DateTime の差が TimeSpan として返る
-            //    if (ts.TotalSeconds > GlobalVariables.TimeToStart * 60 * GlobalVariables.LifeMax)    // Lifeが満タンの時
-            //    {
-            //        GlobalVariables.RestartTime = now.AddSeconds(-GlobalVariables.TimeToStart * 60 * GlobalVariables.LifeMax);
-            //        GlobalVariables.Life = 3;
-            //    }
+            if (GlobalVariables.Life > 0)
+            {
+                StageSelectButton.GetComponent<Button>().enabled = true;
+                RestartButton.GetComponent<Button>().enabled = true;
+                StageSelectButton.GetComponent<Image>().color = buttonDefaultColor;
+                RestartButton.GetComponent<Image>().color = buttonDefaultColor;
+                StageSelectButton.transform.GetChild(0).GetComponent<Text>().color = buttonTextDefaultColor;
+                RestartButton.transform.GetChild(0).GetComponent<Text>().color = buttonTextDefaultColor;
+            }
+            else
+            {
+                StageSelectButton.GetComponent<Button>().enabled = false;
+                RestartButton.GetComponent<Button>().enabled = false;
+                StageSelectButton.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+                RestartButton.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+                StageSelectButton.transform.GetChild(0).GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f); ;
+                RestartButton.transform.GetChild(0).GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f); ;
+            }
 
-            //    int newlife = 0;
-            //    int remainTime = DateTime.Now.Subtract(GlobalVariables.RestartTime).Minutes;
-            //    if (timeToStart * 60 * 1 <= ts.TotalSeconds)
-            //    {
-            //        newlife = 1;
-            //        RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
-            //    }
-            //    if (timeToStart * 60 * 2 <= ts.TotalSeconds)
-            //    {
-            //        newlife = 2;
-            //    }
-            //    if (timeToStart * 60 * 3 <= ts.TotalSeconds)
-            //    {
-            //        newlife = 3;
-            //        TimeToRestartText.SetActive(false);
-            //    }
-            //    string str = "ライフ復活まであと " + (timeToStart - 1 - ((int)ts.TotalMinutes % timeToStart)).ToString("00") + ":" + (60 - 1 - ((int)ts.TotalSeconds % 60)).ToString("00");
-            //    TimeToRestartText.GetComponent<Text>().text = str;
-
-            //    for (int i = 0; i < GlobalVariables.LifeMax; i++)
-            //    {
-            //        if (i < newlife)    // 現在の火花の数の1少ない数を表示
-            //        {
-            //            Remains[i].SetActive(true);
-            //        }
-            //        else
-            //        {
-            //            Remains[i].SetActive(false);
-            //        }
-            //    }
-
-            //    if (newlife > GlobalVariables.Life)
-            //    {
-            //        PanelMovingParticle.transform.position = Remains[newlife - 1].transform.position;
-            //        PanelMovingParticle.SetActive(false);
-            //        PanelMovingParticle.SetActive(true);
-            //    }
-
-            //    GlobalVariables.Life = newlife;
-            //    PlayerPrefs.SetInt("LIFE", GlobalVariables.Life);
-            //}
         }
 
     }
@@ -176,7 +205,7 @@ public class GameManagerTitle : MonoBehaviour {
         if (timeToStart * 60 * 1 <= ts.TotalSeconds)
         {
             newlife = 1;
-            RestartButton.transform.GetChild(0).GetComponent<Text>().text = "再スタート";
+            RestartButton.transform.GetChild(0).GetComponent<Text>().text = TextResources.Text[(int)TextNumber.START, (int)GlobalVariables.Language];  // ]"START";
         }
         if (timeToStart * 60 * 2 <= ts.TotalSeconds)
         {
@@ -187,8 +216,9 @@ public class GameManagerTitle : MonoBehaviour {
             newlife = 3;
             TimeToRestartText.SetActive(false);
         }
-        string str = "ライフ復活まであと " + (timeToStart - 1 - ((int)ts.TotalMinutes % timeToStart)).ToString("00") + ":" + (60 - 1 - ((int)ts.TotalSeconds % 60)).ToString("00");
+        string str = TextResources.Text[(int)TextNumber.TIME_TO_RESTART, (int)GlobalVariables.Language] + (timeToStart - 1 - ((int)ts.TotalMinutes % timeToStart)).ToString("00") + ":" + (60 - 1 - ((int)ts.TotalSeconds % 60)).ToString("00");
         TimeToRestartText.GetComponent<Text>().text = str;
+        TimeToRestartText.GetComponent<Text>().font = Resources.Load(GlobalVariables.LanguageFont) as Font;
 
         DisplayLife(newlife);
 
@@ -238,13 +268,9 @@ public class GameManagerTitle : MonoBehaviour {
     /// </summary>
     void GoStartGame()
     {
-        if (GlobalVariables.Life == 0)
-        {
-            return;
-            GlobalVariables.Life = 1; // 動画を見てゲームする
-        }
         PlayerPrefs.SetInt("CURRENT_STAGE", 0);     // クリアしたステージから
-        SceneManager.LoadScene("OpeningAnimation");
+        currentStage = CurrentScene.GameMain;
+        StartCoroutine("FadeOutScreen");
     }
 
     /// <summary>
@@ -252,19 +278,17 @@ public class GameManagerTitle : MonoBehaviour {
     /// </summary>
     void GoSelectStage()
     {
-        if (GlobalVariables.Life == 0)
-        {
-            return;
-            GlobalVariables.Life = 1; // 動画を見てゲームする
-        }
-        SceneManager.LoadScene("StageSelect");
+        currentStage = CurrentScene.StageSelect;
+        StartCoroutine("FadeOutScreen");
     }
+
     /// <summary>
     /// 
     /// </summary>
     void GoRanking()
     {
-
+        currentStage = CurrentScene.Ranking;
+        StartCoroutine("FadeOutScreen");
     }
 
     /// <summary>
@@ -276,5 +300,25 @@ public class GameManagerTitle : MonoBehaviour {
         GlobalVariables.RestartTime = GlobalVariables.RestartTime.AddMinutes(-1);   //ライフ1つ増やす
 
     }
-}
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator FadeOutScreen()
+    {
+        float sec = 0.5f;
+        for (float i = 0; i < 1f; i += 1f / (sec * 60))
+        {
+            // camera.orthographicSize /= 1.1f;
+            FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, i);
+
+            yield return new WaitForEndOfFrame();
+        }
+        
+        animationEndFlag = true;
+
+        yield break;
+    }
+
+}

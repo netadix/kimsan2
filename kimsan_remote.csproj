@@ -93,13 +93,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AnimatorStart.cs" />
     <Compile Include="Assets\FireCrackerProcedure.cs" />
+    <Compile Include="Assets\GSSA\Scripts\MiniJSON.cs" />
+    <Compile Include="Assets\GSSA\Scripts\SpreadSheetConst.cs" />
+    <Compile Include="Assets\GSSA\Scripts\SpreadSheetObject.cs" />
+    <Compile Include="Assets\GSSA\Scripts\SpreadSheetQuery.cs" />
+    <Compile Include="Assets\GSSA\Scripts\SpreadSheetSetting.cs" />
+    <Compile Include="Assets\GameManagerTitle.cs" />
+    <Compile Include="Assets\GameOverDialog.cs" />
+    <Compile Include="Assets\OpeningExplanation.cs" />
     <Compile Include="Assets\PanelObject.cs" />
-    <Compile Include="Assets\PanelObject2.cs" />
     <Compile Include="Assets\PanelSystem.cs" />
+    <Compile Include="Assets\PanelSystemStages.cs" />
+    <Compile Include="Assets\RankingGameManager.cs" />
     <Compile Include="Assets\ScoreDialog.cs" />
+    <Compile Include="Assets\StageSelectButton.cs" />
+    <Compile Include="Assets\StageSelectGameManager.cs" />
     <Compile Include="Assets\StaticVariables.cs" />
+    <Compile Include="Assets\Test.cs" />
     <Compile Include="Assets\TransitionFlag.cs" />
+    <Compile Include="Assets\UniStoreOpener\UniStoreOpener.cs" />
+    <Compile Include="Assets\camera_object.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />

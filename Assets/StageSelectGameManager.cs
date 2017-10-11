@@ -63,6 +63,7 @@ public class StageSelectGameManager : MonoBehaviour
             {
                 listItem[i].transform.Find("LockedImage").gameObject.SetActive(true);
                 listItem[i].transform.Find("LockedImage").GetComponent<Image>().sprite = Resources.Load<Sprite>("UnLocked");
+                listItem[i].transform.Find("LockedImage").GetComponent<Animator>().enabled = false;
             }
 
             if (stageStatus == (int)1)
@@ -76,6 +77,7 @@ public class StageSelectGameManager : MonoBehaviour
                 {
                     thresholdLevel = i + 1;
                     listItem[i].transform.Find("LockedImage").gameObject.SetActive(true);
+                    listItem[i].transform.Find("LockedImage").GetComponent<Animator>().enabled = false;
                     listItem[i].transform.Find("LockedImage").GetComponent<Image>().sprite = Resources.Load<Sprite>("UnLocked");
                     listItem[i].transform.Find("ClearedTextF").gameObject.SetActive(false);
                 }
@@ -83,6 +85,7 @@ public class StageSelectGameManager : MonoBehaviour
                 {
                     listItem[i].transform.Find("LockedImage").gameObject.SetActive(true);
                     listItem[i].transform.Find("ClearedTextF").gameObject.SetActive(false);
+                    listItem[i].GetComponent<Image>().color = new Color(0.7f, 0.7f, 0.7f);
                 }
             }
 
@@ -141,10 +144,21 @@ public class StageSelectGameManager : MonoBehaviour
         }
         else if (n + 1 > thresholdLevel)
         {
-            listItem[n].transform.Find("LockedImage").GetComponent<Animation>().Stop();
-            listItem[n].transform.Find("LockedImage").GetComponent<Animation>().Play();
+            //listItem[n].transform.Find("LockedImage").GetComponent<Animation>().Stop();
+            //listItem[n].transform.Find("LockedImage").GetComponent<Animation>().Play("LockAnimation");
+            listItem[n].transform.Find("LockedImage").GetComponent<Animator>().Rebind();
+            listItem[n].transform.Find("LockedImage").GetComponent<Animator>().Play("LockAnimation");
 
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             return;
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         }
         PlayerPrefs.SetInt("CURRENT_STAGE", n + 1);
 

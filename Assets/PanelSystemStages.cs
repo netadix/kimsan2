@@ -897,6 +897,36 @@ public partial class PanelSystem
             */
 
             default:
+                if (UnityEngine.Random.value < 0.5f)
+                {
+                    panelSize = 5;
+                }
+                else
+                {
+                    panelSize = 5;
+                }
+
+                currentX = 0;
+                currentY = panelSize - 1;
+                CurrentFusePanelDirection = FuseDirection.Right;
+
+                // Stage X [Random, Random]
+                timeRemain = 60f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[panelSize * panelSize];
+
+                for (int i = 0; i < stage.Length; i++)
+                {
+                    stage[i] = (PanelType)((int)(UnityEngine.Random.value * 8f) + 1);
+                }
+
+                for (int i = 0; i < UnityEngine.Random.value * 7 + 2; i++)
+                {
+                    stage[(int)(UnityEngine.Random.value * (float)panelSize * (float)panelSize)] = PanelType.Nothing;
+                }
+                stage[panelSize - 1] = PanelType.StraightHorizontal;
+
                 break;
         }
     }
