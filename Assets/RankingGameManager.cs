@@ -38,6 +38,7 @@ namespace RankingScene
         private bool exceptionOccured;
         private int myStage;
         private int myHiScore;
+        private bool nowRankingIn;
 
         const int LIST_NUMBER = 50;
 
@@ -56,7 +57,7 @@ namespace RankingScene
 
                 listItem[i].transform.SetParent(ListContentsObject.transform, false);
                 var text = listItem[i].GetComponentInChildren<Text>();
-                text.text = (i + 1).ToString() + "   ";
+                text.text = (i + 1).ToString() + " NOW DOWNLOADING...  ";
 
                 if ((i % 2) == 0)
                 {
@@ -113,6 +114,8 @@ namespace RankingScene
             NameEntryDialog.SetActive(false);
 
             StartCoroutine("ScrollRanking");
+
+            nowRankingIn = false;
 
         }
 
@@ -186,6 +189,7 @@ namespace RankingScene
 
                             if ((i + 1) == ScoreRankingManager.GetComponent<Test>().YourRanking) {
                                 text.color = new Color(1.0f, 0.0f, 0.0f);
+                                nowRankingIn = true;
                             }
                         }           
                         alreadyGetListFlag = true;
@@ -223,16 +227,19 @@ namespace RankingScene
         /// </summary>
         void GoHome()
         {
-            try
+            if (nowRankingIn == true)   // ランク外なのでセーブしない
             {
-                ScoreRankingManager.GetComponent<Test>().SetScore();
-            }
-            catch
-            {
-                exceptionOccured = true;
-                SceneManager.LoadScene("TitleMain");
+                try
+                {
+                    ScoreRankingManager.GetComponent<Test>().SetScore();
+                }
+                catch
+                {
+                    exceptionOccured = true;
+                    SceneManager.LoadScene("TitleMain");
 
-                return;
+                    return;
+                }
             }
 
             StartCoroutine("FadeOutScreen");  // ここでホームに戻るとシーンが破壊されて保存されない！！！！！！
@@ -252,7 +259,7 @@ namespace RankingScene
 
                 yield return new WaitForEndOfFrame();
             }
-            if (exceptionOccured == false)
+            if ((exceptionOccured == false) && (nowRankingIn == true))
             {
                 bool done;
                 int count = 0;

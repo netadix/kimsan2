@@ -175,7 +175,10 @@ public class AnimatorStart : MonoBehaviour {
             InfoText.GetComponent<Text>().text += "\n\nSEARCHING ...";
             if (animationCounter < 0)
             {
-                InfoText.GetComponent<Text>().text += "....................................................".Substring(0, counter / 8);
+                for (int i = 0; i < counter / 10; i++)
+                {
+                    InfoText.GetComponent<Text>().text += ".";
+                }
             }
             if (animationCounter > 0)
             {

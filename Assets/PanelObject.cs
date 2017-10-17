@@ -45,7 +45,7 @@ public class PanelObject : MonoBehaviour {
         }
         else
         {
-            speedUpCount = 10;
+            speedUpCount = GlobalVariables.FireSpeed;
         }
 
         if ((dummyCount % speedUpCount) == 0)

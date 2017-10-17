@@ -37,6 +37,7 @@ static class GlobalVariables
 
     static public LanguageType Language;
     static public string LanguageFont;
+    static public int FireSpeed = 10;
 } 
 
 /// <summary>

@@ -123,60 +123,6 @@ public class StageParameter
     }
 }
 
-public enum Stage
-{
-    S_1 = 1,
-    S_2,
-    S_3,
-    S_4,
-    S_5,
-    S_6,
-    S_7,
-    S_8,
-    S_9,
-    S_10,
-    S_11,
-    S_12,
-    S_13,
-    S_14,
-    S_15,
-    S_16,
-    S_17,
-    S_18,
-    S_19,
-    S_20,
-    S_21,
-    S_22,
-    S_23,
-    S_24,
-    S_25,
-    S_26,
-    S_27,
-    S_28,
-    S_29,
-    S_30,
-    S_31,
-    S_32,
-    S_33,
-    S_34,
-    S_35,
-    S_36,
-    S_37,
-    S_38,
-    S_39,
-    S_40,
-    S_41,
-    S_42,
-    S_43,
-    S_44,
-    S_45,
-    S_46,
-    S_47,
-    S_48,
-    S_49,
-    S_50,
-    S_MAX,
-}
 
 /// <summary>
 /// ///////////////////////////////////////////////////////////////////////
@@ -211,6 +157,7 @@ public partial class PanelSystem : MonoBehaviour
     public GameObject LifeText;
     public GameObject FadeOutPanel;
     public GameObject GameOverDialogImage;
+    public GameObject BackGround;
 
     //public DateTime restartTime;   // ライフ復活までの時間
 
@@ -220,13 +167,17 @@ public partial class PanelSystem : MonoBehaviour
     private int panelSize;
     private PanelType[] stage;
     private GameObject[] Remains;
-    private GameObject[] stageToStageFireRope;
-    private GameObject[] nextStageToStageFireRope;
 
     private long currentX;
     private long currentY;
-    private PanelMatrix Panel;
-    private PanelMatrix NextPanel;
+
+    private PanelMatrix Panel;                      // 現在の面のパネル
+    private PanelMatrix NextPanel;                  // 次の面のパネル
+    private GameObject[] stageToStageFireRope;      // 現在の面のロープ
+    private GameObject[] nextStageToStageFireRope;  // 次の面のロープ
+    private GameObject backGround;
+    private GameObject nextBackGround;
+
     private MoveDirection PanelDirection;
     private float moveDistance;
     private GameObject MovingPanel;
@@ -527,12 +478,24 @@ public partial class PanelSystem : MonoBehaviour
                 if (currentFlag)
                 {
                     panel.PanelObject[i, j].transform.position = new Vector2(i * panelWidth, j * panelHeight);
-                }
+                }       
                 else
                 {
                     panel.PanelObject[i, j].transform.position = new Vector2(stageToStageFireRope[stageToStageFireRope.Length - 1].transform.position.x + i * panelWidth + offset, stageToStageFireRope[stageToStageFireRope.Length - 1].transform.position.y - ((panelSize - 1) * panelHeight) + j * panelHeight);
                 }
             }
+        }
+        if (currentFlag)
+        {
+            Vector2 pos = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
+            backGround = Instantiate(BackGround, pos, transform.rotation) as GameObject;
+           // backGround.transform.position = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
+        }
+        else
+        {
+            Vector2 pos = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
+            nextBackGround = Instantiate(BackGround, pos, transform.rotation) as GameObject;
+            //nextBackGround.transform.position = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
         }
     }
 
@@ -793,6 +756,8 @@ public partial class PanelSystem : MonoBehaviour
         InformationText.GetComponent<Text>().text = "";
         DisplayStageText(stageCount);
 
+        //backGround = Instantiate(BackGround, transform.position, transform.rotation) as GameObject;
+
         StageData(stageCount);
         CreateStage(out Panel);
         StageData(stageCount + 1);        // 次のステージのデータ
@@ -872,6 +837,7 @@ public partial class PanelSystem : MonoBehaviour
 
             }
         }
+        Destroy(backGround);
 
         for (int k = 0; k < stageToStageFireRope.Length; k++)
         {
@@ -880,6 +846,8 @@ public partial class PanelSystem : MonoBehaviour
 
         Panel = NextPanel;      // 現在のステージと次のステージを入れ替え
         stageToStageFireRope = nextStageToStageFireRope;
+        backGround = nextBackGround;
+        
         stageCount = stage;
         StageData(stageCount);
 
@@ -901,6 +869,8 @@ public partial class PanelSystem : MonoBehaviour
 
             }
         }
+
+        Destroy(backGround);
 
         for (int k = 0; k < stageToStageFireRope.Length; k++)
         {
@@ -2666,10 +2636,17 @@ public partial class PanelSystem : MonoBehaviour
                 Missile.transform.position -= deltax;
             }
 
+            backGround.transform.position -= deltax;
+            if ((nextBackGround != backGround) && (nextBackGround != null))  // Stage 5, 10, 15...以外
+            {
+                nextBackGround.transform.position -= deltax;
+            }
+
             if (Input.GetMouseButton(0))    // キャンセル
             {
                 continue;
             }
+
             yield return new WaitForEndOfFrame();
 
         }
