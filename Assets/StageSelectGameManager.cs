@@ -88,6 +88,15 @@ public class StageSelectGameManager : MonoBehaviour
                     listItem[i].GetComponent<Image>().color = new Color(0.7f, 0.7f, 0.7f);
                 }
             }
+            int clearLevel = PlayerPrefs.GetInt("CLEAR_LEVEL" + (i + 1), 0);
+            if (clearLevel == 1)    // Excellent
+            {
+                listItem[i].transform.Find("MedalImage").gameObject.SetActive(true);
+            }
+            else
+            {
+                listItem[i].transform.Find("MedalImage").gameObject.SetActive(false);
+            }
 
         }
 
@@ -148,13 +157,10 @@ public class StageSelectGameManager : MonoBehaviour
             //listItem[n].transform.Find("LockedImage").GetComponent<Animation>().Play("LockAnimation");
             listItem[n].transform.Find("LockedImage").GetComponent<Animator>().Rebind();
             listItem[n].transform.Find("LockedImage").GetComponent<Animator>().Play("LockAnimation");
-
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-            return;
-            //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+            //return;
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
             //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■

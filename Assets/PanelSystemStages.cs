@@ -281,7 +281,46 @@ public partial class PanelSystem
 
         switch ((Stage)stageNum)
         {
-            case Stage.S_1:     // Stage1
+            case Stage.S_49:
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Up;
+//                nextStartDirection = FuseDirection.Left;
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Disabled,
+                    PanelType.Disabled,
+                    PanelType.Disabled,
+                    PanelType.CurveLeftUp,
+
+                     // X 2列目
+                    PanelType.Disabled,
+                    PanelType.Disabled,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveDownLeft_UpRight,
+
+                     // X 3列目
+                    PanelType.CurveUpRight,
+                    PanelType.CurveDownLeft_UpRight,
+                    PanelType.CurveDownLeft,
+                    PanelType.Disabled,
+
+                     // X 4列目
+                    PanelType.Nothing,
+                    PanelType.CurveDownLeft_UpRight,
+                    PanelType.Disabled,
+                    PanelType.Disabled,
+
+        };
+        break;
+
+        case Stage.S_1:     // Stage1
                 currentX = 0;
                 currentY = 3;
                 CurrentFusePanelDirection = FuseDirection.Right;

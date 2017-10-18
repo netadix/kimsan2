@@ -164,8 +164,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Left:
                     case FuseDirection.Right:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                 }
@@ -177,8 +178,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Down:
                     case FuseDirection.Up:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Left:
@@ -200,8 +202,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Down:
                     case FuseDirection.Right:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Up:
@@ -222,8 +225,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Down:
                     case FuseDirection.Left:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Up:
@@ -250,8 +254,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Up:
                     case FuseDirection.Left:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
 
@@ -274,8 +279,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Up:
                     case FuseDirection.Right:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Left:
@@ -343,8 +349,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Down:
                     case FuseDirection.Right:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Up:
@@ -372,8 +379,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Up:
                     case FuseDirection.Left:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Right:
@@ -395,8 +403,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Up:
                     case FuseDirection.Right:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Left:
@@ -412,8 +421,9 @@ public class PanelObject : MonoBehaviour {
                     case FuseDirection.Down:
                     case FuseDirection.Left:
                         // Error
-                        startFuse = 0;
-                        endFuse = 0;
+                        //startFuse = 0;
+                        //endFuse = 0;
+                        // Nothing to do
                         break;
 
                     case FuseDirection.Up:

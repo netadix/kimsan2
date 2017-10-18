@@ -152,6 +152,8 @@ public class ScoreDialog : MonoBehaviour {
         ShareButton.SetActive(true);
         HomeButton.SetActive(true);
 
+        clearLevel = 0;
+
         if ((score > excellentScore) || (score > currentHiScore))  
         {
             if (score > excellentScore)
@@ -159,7 +161,7 @@ public class ScoreDialog : MonoBehaviour {
                 StageClearParticle.SetActive(false);
                 StageClearParticle.SetActive(true);
                 ExcellentText.SetActive(true);
-
+                clearLevel = 1;
             }
             if (score > currentHiScore)
             {
@@ -168,11 +170,10 @@ public class ScoreDialog : MonoBehaviour {
 
             // StartCoroutine("AnimationExcellentText");
             gameObject.GetComponent<Animation>().Play("ScoreDialogAnimation");
-            clearLevel = 1;
         }
         else
         {
-            clearLevel = 0;
+            //clearLevel = 0;
         }
 
 

@@ -487,13 +487,13 @@ public partial class PanelSystem : MonoBehaviour
         }
         if (currentFlag)
         {
-            Vector2 pos = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
+            Vector3 pos = new Vector3(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2), 1f); // Z = 1.0以上でないとパネル移動のパーティクルが見えなくなる
             backGround = Instantiate(BackGround, pos, transform.rotation) as GameObject;
            // backGround.transform.position = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
         }
         else
         {
-            Vector2 pos = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
+            Vector3 pos = new Vector3(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2), 1f);
             nextBackGround = Instantiate(BackGround, pos, transform.rotation) as GameObject;
             //nextBackGround.transform.position = new Vector2(panel.PanelObject[0, 0].transform.position.x + ((panelWidth * panel.Size)) / 2, panel.PanelObject[0, 0].transform.position.y + ((panelHeight * panel.Size) / 2));
         }
@@ -818,7 +818,6 @@ public partial class PanelSystem : MonoBehaviour
         StartPanelProcedure();
 
         oneSecond = 59;
-
     }
 
     /// <summary>
@@ -1106,15 +1105,15 @@ public partial class PanelSystem : MonoBehaviour
             case GameStatus.PreStart:
                 generalCounter++;
 
-                FireCracker.SetActive(true);
-                FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f); // これ効果なかった(アニメーターが何故か走っていて優先される
-                PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], FuseDirection.Left, Panel.Matrix[currentX, currentY]);
-
-                NextArrowImage.SetActive(true);
-                NextArrowImage.transform.position = Panel.PanelObject[panelSize - 1, 0].transform.position + new Vector3(panelWidth * 1.25f, panelHeight * 0.5f, 0f);
-
                 if (generalCounter == 1)
                 {
+                    FireCracker.SetActive(true);
+                    FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f); // これ効果なかった(アニメーターが何故か走っていて優先される
+                    PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], FuseDirection.Left, Panel.Matrix[currentX, currentY]);
+
+                    NextArrowImage.SetActive(true);
+                    NextArrowImage.transform.position = Panel.PanelObject[panelSize - 1, 0].transform.position + new Vector3(panelWidth * 1.25f, panelHeight * 0.5f, 0f);
+
                     //FireCracker.GetComponent<Animator>().SetBool("FireCrackerAppearFlag", true);
                     PanelSubSystem.GetComponent<PanelObject>().SpeedUpFlag = false; // スピードダウン
                     DisplayStageText(stageCount);
