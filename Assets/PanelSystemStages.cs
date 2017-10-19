@@ -312,7 +312,7 @@ public partial class PanelSystem
                     PanelType.Disabled,
 
                      // X 4列目
-                    PanelType.Nothing,
+                    PanelType.Disabled,
                     PanelType.CurveDownLeft_UpRight,
                     PanelType.Disabled,
                     PanelType.Disabled,

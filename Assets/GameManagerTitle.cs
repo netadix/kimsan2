@@ -25,6 +25,8 @@ public class GameManagerTitle : MonoBehaviour {
     public GameObject PanelMovingParticle;
     public GameObject ScoreText;
     public GameObject FadeOutPanel;
+    public GameObject LeftEye;
+    public GameObject RightEye;
 
     private GameObject [] Remains;
     private int oneSecond;
@@ -35,6 +37,9 @@ public class GameManagerTitle : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+        RightEye.SetActive(false);
+        LeftEye.SetActive(false);
+
         Button btn = RestartButton.GetComponent<Button>();
         btn.onClick.AddListener(GoStartGame);
 
@@ -271,6 +276,9 @@ public class GameManagerTitle : MonoBehaviour {
         PlayerPrefs.SetInt("CURRENT_STAGE", 0);     // クリアしたステージから
         currentStage = CurrentScene.GameMain;
         StartCoroutine("FadeOutScreen");
+        //RightEye.SetActive(true);
+        LeftEye.SetActive(true);
+
     }
 
     /// <summary>
@@ -307,7 +315,7 @@ public class GameManagerTitle : MonoBehaviour {
     /// <returns></returns>
     IEnumerator FadeOutScreen()
     {
-        float sec = 0.5f;
+        float sec = 0.8f;
         for (float i = 0; i < 1f; i += 1f / (sec * 60))
         {
             // camera.orthographicSize /= 1.1f;

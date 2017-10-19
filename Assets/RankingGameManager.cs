@@ -116,7 +116,6 @@ namespace RankingScene
             StartCoroutine("ScrollRanking");
 
             nowRankingIn = false;
-
         }
 
         // Update is called once per frame
@@ -153,6 +152,11 @@ namespace RankingScene
                 ErrorText.GetComponent<Text>().text = "";
                 YourRankText.GetComponent<Text>().text = "YOUR RANKING " + ScoreRankingManager.GetComponent<Test>().YourRanking;
                 YourScoreText.GetComponent<Text>().text = "YOUR SCORE " + myHiScore;
+
+                NameEntryDialog.transform.Find("InputField").gameObject.SetActive(false);
+                NameEntryDialog.transform.Find("InputField").gameObject.SetActive(true);
+                NameEntryDialog.transform.Find("InputField").GetComponent<InputField>().text = "";
+                NameEntryDialog.transform.Find("InputField").GetComponent<InputField>().ActivateInputField();
             }
 
             //----------------------------------------------------------------------
