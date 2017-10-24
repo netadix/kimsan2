@@ -133,9 +133,6 @@
     <Reference Include="UnityEditor.iOS.Extensions.Common">
       <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
-    <Reference Include="JarResolverLib">
-      <HintPath>Assets\PlayServicesResolver\Editor\JarResolverLib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="kimsan_remote.Plugins.csproj">
@@ -152,12 +149,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\PlayServicesResolver\Editor\AdMobDependencies.cs" />
-    <Compile Include="Assets\PlayServicesResolver\Editor\PlayServicesResolver.cs" />
-    <Compile Include="Assets\PlayServicesResolver\Editor\SampleDependencies.cs" />
+    <Compile Include="Assets\NendAd\Editor\NendAndroidSetup.cs" />
+    <Compile Include="Assets\NendAd\Editor\NendIOSXcodeSetup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Plugins\Android\GoogleMobileAdsPlugin\AndroidManifest.xml" />
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
     <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Readme.txt" />

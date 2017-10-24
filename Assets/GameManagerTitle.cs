@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using NendUnityPlugin.AD;
+using NendUnityPlugin.Common;
 
 enum CurrentScene
 {
@@ -27,6 +29,9 @@ public class GameManagerTitle : MonoBehaviour {
     public GameObject FadeOutPanel;
     public GameObject LeftEye;
     public GameObject RightEye;
+    public GameObject BackGroundParticle;
+
+    public NendAdInterstitial NendAdInterstitial;//インタースティシャル広告
 
     private GameObject [] Remains;
     private int oneSecond;
@@ -134,6 +139,10 @@ public class GameManagerTitle : MonoBehaviour {
 
         animationEndFlag = false;
         currentStage = CurrentScene.Idle;
+
+        NendAdInterstitial.Instance.Load("a6eca9dd074372c898dd1df549301f277c53f2b9", "3172");
+
+        NendAdInterstitial.Instance.Show();
     }
 
     // Update is called once per frame
@@ -146,7 +155,33 @@ public class GameManagerTitle : MonoBehaviour {
             switch (currentStage)
             {
                 case CurrentScene.GameMain:
-                    SceneManager.LoadScene("OpeningAnimation");
+                    //SceneManager.LoadScene("OpeningAnimation");
+                    int cleared;
+                    int stage = (int)Stage.S_1;
+
+                    for (int i = (int)Stage.S_1; i < (int)Stage.S_MAX; i++)
+                    {
+                        cleared = PlayerPrefs.GetInt("CLEARED" + i, 0);
+
+                        if (cleared == (int)1)
+                        {
+                            stage = i;
+                            break;
+                        }
+                    }
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    if (true) // ((stage % 50) == 0)
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    {
+                        SceneManager.LoadScene("OpeningExplanation");
+                        return;
+                    }
+
+                    SceneManager.LoadScene("GameMain");
                     break;
 
                 case CurrentScene.StageSelect:
@@ -278,6 +313,10 @@ public class GameManagerTitle : MonoBehaviour {
         StartCoroutine("FadeOutScreen");
         //RightEye.SetActive(true);
         LeftEye.SetActive(true);
+
+        BackGroundParticle.GetComponent<ParticleSystem>().startSpeed = 2.5f;
+        BackGroundParticle.GetComponent<ParticleSystem>().startSize = 2.0f;
+        BackGroundParticle.GetComponent<ParticleSystem>().startColor = new Color(1f, 0.3f, 0.0f);
 
     }
 

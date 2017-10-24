@@ -132,19 +132,43 @@ public class AnimatorStart : MonoBehaviour {
     /// <returns></returns>
     IEnumerator DisplayAlertText()
     {
-        AlertText.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
-        AlertText.SetActive(false);
-        yield return new WaitForSeconds(0.5f);
-        AlertText.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
-        AlertText.SetActive(false);
-        yield return new WaitForSeconds(0.5f);
-        AlertText.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
-        AlertText.SetActive(false);
-        yield return new WaitForSeconds(0.5f);
+        bool[] pattern = { true, false, true, false, true, false };
+        
+        foreach(bool onoff in pattern)
+        {
+            AlertText.SetActive(onoff);
+            yield return new WaitForSeconds(0.5f);
 
+            AlertText.SetActive(onoff);
+
+            //yield return new WaitForSeconds(0.5f);
+            //AlertText.SetActive(false);
+            //yield return new WaitForSeconds(0.5f);
+            //AlertText.SetActive(true);
+            //yield return new WaitForSeconds(0.5f);
+            //AlertText.SetActive(false);
+            //yield return new WaitForSeconds(0.5f);
+            //AlertText.SetActive(true);
+            //yield return new WaitForSeconds(0.5f);
+            //AlertText.SetActive(false);
+            //yield return new WaitForSeconds(0.5f);
+
+            if (gameStartFlag == true)
+            {
+
+                for (float i = 0; i < 1f; i += 0.02f)
+                {
+                    //camera.orthographicSize /= 1.1f;
+                    FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, i);
+
+                    yield return new WaitForEndOfFrame();
+                }
+                gameStartFlag = false;
+                SceneManager.LoadScene("GameMain");
+
+                yield break;
+            }
+        }
         alertFlag = true;
 
         for (float i = 1; i > 0f; i -= 0.04f)
@@ -155,6 +179,7 @@ public class AnimatorStart : MonoBehaviour {
         yield break;
 
     }
+
     /// <summary>
     /// 
     /// </summary>

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kimsan_remote", "kimsan_rem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kimsan_remote.Editor.Plugins", "kimsan_remote.Editor.Plugins.csproj", "{47DCEDBC-9CB1-9F20-BBDE-8044CC3F0AE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kimsan_remote.Editor", "kimsan_remote.Editor.csproj", "{703C47E3-58D5-EDCB-1A68-5C7C2D69BDCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{47DCEDBC-9CB1-9F20-BBDE-8044CC3F0AE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47DCEDBC-9CB1-9F20-BBDE-8044CC3F0AE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47DCEDBC-9CB1-9F20-BBDE-8044CC3F0AE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{703C47E3-58D5-EDCB-1A68-5C7C2D69BDCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{703C47E3-58D5-EDCB-1A68-5C7C2D69BDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{703C47E3-58D5-EDCB-1A68-5C7C2D69BDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{703C47E3-58D5-EDCB-1A68-5C7C2D69BDCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

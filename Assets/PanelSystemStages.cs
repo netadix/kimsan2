@@ -995,6 +995,496 @@ public partial class PanelSystem
                 };
                 break;
 
+            case Stage.S_22:     // Stage1 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Right;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+
+                    // X 2列目
+                    PanelType.Nothing,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.Nothing,
+
+                    // X 3列目
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.Nothing,
+
+                    // X 4列目
+            //      PanelType.CurveLeftUp,
+                    PanelType.CurveUpRight,
+                    PanelType.StraightVertical,
+            //      PanelType.CurveDownLeft,
+                    PanelType.CurveRightDown,
+            //      PanelType.CurveDownLeft,
+                    PanelType.Nothing,
+
+                    };
+                break;
+
+            case Stage.S_23:     // Stage2 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Down;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.StraightVertical,
+                    PanelType.StraightVertical,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveDownLeft,
+
+                    // X 2列目
+                    PanelType.StraightVertical,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+                    PanelType.Nothing,
+
+                    // X 3列目
+                    PanelType.StraightVertical,
+                    PanelType.CurveLeftUp_RightDown,
+                    PanelType.Nothing,
+                    PanelType.CurveDownLeft_UpRight,
+
+                    // X 4列目
+                    PanelType.CurveUpRight,
+                    PanelType.StraightVertical,
+                    PanelType.CurveLeftUp_RightDown,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+            case Stage.S_24:     // Stage3 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Right;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+
+                stage = new PanelType[]
+                {
+                // X 1列目
+                PanelType.StraightVertical,
+                PanelType.StraightVertical,
+                PanelType.StraightVertical,
+                PanelType.StraightHorizontal,
+
+                // X 2列目
+                PanelType.CurveLeftUp_RightDown,
+                PanelType.StraightVertical,
+                PanelType.CurveLeftUp_RightDown,
+                PanelType.StraightHorizontal,
+
+                // X 3列目
+                PanelType.StraightVertical,
+                PanelType.Nothing,
+                PanelType.CurveLeftUp,
+                PanelType.CurveDownLeft,
+
+                // X 4列目
+                PanelType.CurveUpRight,
+                PanelType.StraightVertical,
+                PanelType.StraightHorizontal,
+                PanelType.StraightHorizontal,
+
+            };
+                break;
+
+            case Stage.S_25:     // Stage4 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Down;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+//                    PanelType.CurveLeftUp,//bug
+                    PanelType.CurveLeftUp,
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+
+                     // X 2列目
+//                    PanelType.CurveUpRight,
+//                    PanelType.StraightVertical,
+//                    PanelType.StraightVertical,
+//                    PanelType.CurveDownLeft,
+
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+
+
+                     // X 3列目
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp,
+
+                     // X 4列目
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.Nothing,
+                    PanelType.CurveUpRight,
+
+                };
+                break;
+
+            case Stage.S_26:     // Stage5 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Down;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveDownLeft,
+
+                     // X 2列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveRightDown,
+
+                     // X 3列目
+                    PanelType.CurveDownLeft_UpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+
+                     // X 4列目
+                    PanelType.CurveLeftUp_RightDown,
+                    PanelType.CurveDownLeft,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+
+            case Stage.S_27:     // Stage 6 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Down;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 20f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveDownLeft,
+
+                     // X 2列目
+                    PanelType.CurveUpRight,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveRightDown,
+
+                     // X 3列目
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveDownLeft,
+
+                     // X 4列目
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+            case Stage.S_28:     // Stage 7 bug  uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Up;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 60f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp_RightDown,//bug
+
+                     // X 2列目
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp ,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+
+                     // X 3列目
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+
+                     // X 4列目
+                    PanelType.CurveLeftUp_RightDown,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+
+            case Stage.S_29:     // Stage 8 bug  uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Up;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp_RightDown,//bug
+
+                     // X 2列目
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp,
+
+                     // X 3列目
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+
+                     // X 4列目
+                    PanelType.CurveLeftUp_RightDown,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+            case Stage.S_30:     // Stage 9 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Right;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 30f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+
+                     // X 2列目
+                    PanelType.Nothing,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.Nothing,
+
+                     // X 3列目
+                    PanelType.Nothing,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.Nothing,
+
+                     // X 4列目
+                    PanelType.StraightHorizontal,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+            case Stage.S_31:     // Stage 10 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Right;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 60f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+
+                     // X 2列目
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+
+                     // X 3列目
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+
+                     // X 4列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+
+                };
+                break;
+
+            case Stage.S_32:     // Stage 11 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Right;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 60f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+
+                     // X 2列目
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveLeftUp,
+
+                     // X 3列目
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveUpRight,
+
+                     // X 4列目
+                    PanelType.StraightHorizontal,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+
+                };
+                break;
+
+            case Stage.S_33:     // Stage 12 uehara
+                currentX = 0;
+                currentY = 3;
+                CurrentFusePanelDirection = FuseDirection.Right;
+
+                // Stage1 [4, 4]
+                panelSize = 4;
+
+                timeRemain = 60f;
+                excellentScore = (int)timeRemain * TIME_RATIO;
+
+                stage = new PanelType[]
+                {
+                    // X 1列目
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.StraightHorizontal,
+
+                     // X 2列目
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveUpRight,
+                    PanelType.CurveRightDown,
+                    PanelType.CurveLeftUp,
+
+                     // X 3列目
+                    PanelType.CurveRightDown,
+                    PanelType.CurveLeftUp,
+                    PanelType.CurveDownLeft,
+                    PanelType.CurveUpRight,
+
+                     // X 4列目
+                    PanelType.StraightHorizontal,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+                    PanelType.Nothing,
+
+                };
+                break;
             /*
                         case Stage.S_7:     // Stage3
                             currentX = 0;
