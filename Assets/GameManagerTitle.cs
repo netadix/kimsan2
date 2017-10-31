@@ -13,6 +13,7 @@ enum CurrentScene
     GameMain,
     StageSelect,
     Ranking,
+    Advertisement,
 }
 
 public class GameManagerTitle : MonoBehaviour {
@@ -30,8 +31,6 @@ public class GameManagerTitle : MonoBehaviour {
     public GameObject LeftEye;
     public GameObject RightEye;
     public GameObject BackGroundParticle;
-
-    public NendAdInterstitial NendAdInterstitial;//インタースティシャル広告
 
     private GameObject [] Remains;
     private int oneSecond;
@@ -78,32 +77,6 @@ public class GameManagerTitle : MonoBehaviour {
             GlobalVariables.RestartTime = DateTime.FromBinary(Convert.ToInt64(str));
         }
 
-        //for (int i = 0; i < GlobalVariables.Life; i++)
-        //{
-        //    Remains[i].SetActive(true);
-        //}
-        //if (GlobalVariables.Life == GlobalVariables.LifeMax)
-        //{
-        //    TimeToRestartText.SetActive(false);
-        //}
-        //else if (GlobalVariables.Life == 0)
-        //{
-        //    RestartButton.transform.GetChild(0).GetComponent<Text>().text = "動画を見て再スタート";
-        //    StageSelectButton.transform.GetChild(0).GetComponent<Text>().text = "動画を見てステージ選択";
-        //}
-
-        //string str = PlayerPrefs.GetString("RESTART_TIME", "@");    // ステージクリア時、復活タイマー0からスタート
-        //if (str == "@")
-        //{
-        //    GlobalVariables.RestartTime = System.DateTime.Now;
-        //    restartTime = GlobalVariables.RestartTime.AddMinutes(-GlobalVariables.TimeToStart * GlobalVariables.Life);     // ライフ分時間を過去に遡る
-        //}
-        //else
-        //{
-        //    GlobalVariables.RestartTime = System.DateTime.FromBinary(System.Convert.ToInt64(str));
-        //    restartTime = GlobalVariables.RestartTime;
-        //}
-
         int score = 0;
         for (int i = (int)Stage.S_1; i < (int)Stage.S_MAX; i++)
         {
@@ -137,12 +110,21 @@ public class GameManagerTitle : MonoBehaviour {
 
         FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
 
+        StageSelectButton.transform.GetChild(1).gameObject.SetActive(false);
+        RestartButton.transform.GetChild(1).gameObject.SetActive(false);
+
         animationEndFlag = false;
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
         currentStage = CurrentScene.Idle;
 
         NendAdInterstitial.Instance.Load("a6eca9dd074372c898dd1df549301f277c53f2b9", "3172");
 
         NendAdInterstitial.Instance.Show();
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+        // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     }
 
     // Update is called once per frame
@@ -154,8 +136,20 @@ public class GameManagerTitle : MonoBehaviour {
         {
             switch (currentStage)
             {
+                case CurrentScene.Advertisement:
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    // 動画を表示
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    // もし動画が終わったらそのイベントで画面遷移
+                    currentStage = CurrentScene.GameMain;
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+                    break;
+
                 case CurrentScene.GameMain:
-                    //SceneManager.LoadScene("OpeningAnimation");
                     int cleared;
                     int stage = (int)Stage.S_1;
 
@@ -172,7 +166,7 @@ public class GameManagerTitle : MonoBehaviour {
                     ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
                     ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
                     ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-                    if (true) // ((stage % 50) == 0)
+                    if (true) // ((stage % 50) == 0)    // 50ステージ毎にアニメーション表示
                     ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
                     ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
                     ///////////■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -205,21 +199,25 @@ public class GameManagerTitle : MonoBehaviour {
 
             if (GlobalVariables.Life > 0)
             {
-                StageSelectButton.GetComponent<Button>().enabled = true;
-                RestartButton.GetComponent<Button>().enabled = true;
-                StageSelectButton.GetComponent<Image>().color = buttonDefaultColor;
-                RestartButton.GetComponent<Image>().color = buttonDefaultColor;
-                StageSelectButton.transform.GetChild(0).GetComponent<Text>().color = buttonTextDefaultColor;
-                RestartButton.transform.GetChild(0).GetComponent<Text>().color = buttonTextDefaultColor;
+                StageSelectButton.transform.GetChild(1).gameObject.SetActive(false);
+                RestartButton.transform.GetChild(1).gameObject.SetActive(false);
+                //StageSelectButton.GetComponent<Button>().enabled = true;
+                //RestartButton.GetComponent<Button>().enabled = true;
+                //StageSelectButton.GetComponent<Image>().color = buttonDefaultColor;
+                //RestartButton.GetComponent<Image>().color = buttonDefaultColor;
+                //StageSelectButton.transform.GetChild(0).GetComponent<Text>().color = buttonTextDefaultColor;
+                //RestartButton.transform.GetChild(0).GetComponent<Text>().color = buttonTextDefaultColor;
             }
             else
             {
-                StageSelectButton.GetComponent<Button>().enabled = false;
-                RestartButton.GetComponent<Button>().enabled = false;
-                StageSelectButton.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-                RestartButton.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-                StageSelectButton.transform.GetChild(0).GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f); ;
-                RestartButton.transform.GetChild(0).GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f); ;
+                StageSelectButton.transform.GetChild(1).gameObject.SetActive(true);
+                RestartButton.transform.GetChild(1).gameObject.SetActive(true);
+                //StageSelectButton.GetComponent<Button>().enabled = false;
+                //RestartButton.GetComponent<Button>().enabled = false;
+                //StageSelectButton.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+                //RestartButton.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+                //StageSelectButton.transform.GetChild(0).GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f); ;
+                //RestartButton.transform.GetChild(0).GetComponent<Text>().color = new Color(0.5f, 0.5f, 0.5f, 0.6f); ;
             }
 
         }
@@ -314,7 +312,7 @@ public class GameManagerTitle : MonoBehaviour {
         //RightEye.SetActive(true);
         LeftEye.SetActive(true);
 
-        BackGroundParticle.GetComponent<ParticleSystem>().startSpeed = 2.5f;
+        BackGroundParticle.GetComponent<ParticleSystem>().startSpeed = 2.5f;    // レガシーな書式なので今後は変更しないといけない
         BackGroundParticle.GetComponent<ParticleSystem>().startSize = 2.0f;
         BackGroundParticle.GetComponent<ParticleSystem>().startColor = new Color(1f, 0.3f, 0.0f);
 
@@ -355,6 +353,7 @@ public class GameManagerTitle : MonoBehaviour {
     IEnumerator FadeOutScreen()
     {
         float sec = 0.8f;
+
         for (float i = 0; i < 1f; i += 1f / (sec * 60))
         {
             // camera.orthographicSize /= 1.1f;

@@ -300,6 +300,7 @@ public class Test : MonoBehaviour {
         catch(Exception e)
         {
             exceptionOccurredFlag = true;
+            Debug.Log(e);
         }
     }
 
@@ -357,6 +358,7 @@ public class Test : MonoBehaviour {
         catch (Exception e)
         {
             exceptionOccurredFlag = true;
+            Debug.Log(e);
 
             yield break;
         }

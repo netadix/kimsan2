@@ -71,7 +71,8 @@ public enum GameStatus
     ClearedRocket1,
     GameEnd,
     GameEnd2,
-    Restart
+    Restart,
+    Idle
 
 
 }
@@ -818,6 +819,10 @@ public partial class PanelSystem : MonoBehaviour
         StartPanelProcedure();
 
         oneSecond = 59;
+
+        FadeOutPanel.GetComponent<Animation>().Stop();
+        FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+
     }
 
     /// <summary>
@@ -977,6 +982,12 @@ public partial class PanelSystem : MonoBehaviour
                 {
                     //GotoStage(++stageCount);
                     stageCount++;
+
+                    gameStatus = GameStatus.Idle;
+                    StartCoroutine(FadeOutScreenPostAnimation());
+
+                    break;
+
                     StartStage();
 
                     gameStatus = GameStatus.PreStart;
@@ -1003,6 +1014,10 @@ public partial class PanelSystem : MonoBehaviour
                 break;
 
             case GameStatus.ChallengeTime:      // 火花が消えていくが完全に消えるまではまだ生きている
+                if (generalCounter == 0)
+                {
+                    FadeOutPanel.GetComponent<Animation>().Play("GameOverAlarmAnimation");
+                }
                 const float deltaChallengeTime = 120;
                 FireCracker.transform.localScale = new Vector3(0.2f - 0.2f / deltaChallengeTime * generalCounter, 0.2f - 0.2f / deltaChallengeTime * generalCounter, 1f);
                 bool state = Playing();
@@ -1013,6 +1028,8 @@ public partial class PanelSystem : MonoBehaviour
                 generalCounter++;
                 if (generalCounter >= deltaChallengeTime)
                 {
+                    FadeOutPanel.GetComponent<Animation>().Stop();
+                    FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
                     StageEndCommonProcedure();
                     generalCounter = 0;
                     //GlobalVariables.Life--;
@@ -1027,16 +1044,6 @@ public partial class PanelSystem : MonoBehaviour
                         GameOver();
                         gameStatus = GameStatus.GameOver;
                     }
-
-                    //if (GlobalVariables.Life - 1 <= 0)
-                    //{
-                    //    gameStatus = GameStatus.GameEnd;
-                    //}
-                    //else
-                    //{
-                    //    GameOver();
-                    //    gameStatus = GameStatus.GameOver;
-                    //}
                 }
                 break;
 
@@ -1183,6 +1190,7 @@ public partial class PanelSystem : MonoBehaviour
             case GameStatus.Restart:
                 break;
 
+            case GameStatus.Idle:
             default:
                 // Nothing to do.
                 break;
@@ -1388,6 +1396,7 @@ public partial class PanelSystem : MonoBehaviour
         {
             TimeText.GetComponent<Animation>().Play();
             timeTextAnimationFlag = true;
+            FadeOutPanel.GetComponent<Animation>().Play("GameOverAlarmAnimation");
         }
 
         if (Panel.PanelObject[currentX, currentY].name.Substring(0, 2) != "No")   // "NoPanel"
@@ -2246,12 +2255,22 @@ public partial class PanelSystem : MonoBehaviour
         if (gameStatus == GameStatus.Play)
         {
             PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], nextStartDirection, currentType);
+            if (timeRemain > 5f)   // タイマーが5以上でアラート消す
+            {
+                FadeOutPanel.GetComponent<Animation>().Stop();
+                FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+            }
         }
         else if ((gameStatus == GameStatus.ChallengeTime) && (challengeTimeFlag == false))
         {
             PanelSubSystem.GetComponent<PanelObject>().StartBurning(Panel.PanelObject[currentX, currentY], nextStartDirection, currentType);
             FireCracker.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
             gameStatus = GameStatus.Play;
+            if (timeRemain > 5f)   // タイマーが5以上でアラート消す
+            {
+                FadeOutPanel.GetComponent<Animation>().Stop();
+                FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+            }
         }
 
         if (Panel.PanelObject[currentX, currentY].name.Substring(0, 2) != "No")   // "NoPanel" チャレンジタイムに入る時に1フレーム分パネルの色がちらつくための防止
@@ -2330,6 +2349,9 @@ public partial class PanelSystem : MonoBehaviour
 
         InformationText.GetComponent<Animation>().Stop();
         InformationText.GetComponent<Animation>().Play("PopUpTextAnimation");
+
+        FadeOutPanel.GetComponent<Animation>().Stop();
+        FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
 
         //Animator anime = MainCamera.GetComponent<Animator>();
         //anime.Play("CameraBlur");
@@ -2420,6 +2442,9 @@ public partial class PanelSystem : MonoBehaviour
         //Animator anime = MainCamera.GetComponent<Animator>();
         //anime.Play("CameraBlur");
 
+        FadeOutPanel.GetComponent<Animation>().Stop();
+        FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
+
         Animator anime = MainCamera.GetComponent<Animator>();
         anime.Rebind();
         anime.Play("CameraShocked");
@@ -2466,6 +2491,9 @@ public partial class PanelSystem : MonoBehaviour
         InformationText.GetComponent<Text>().text = "STAGE " + stageCount + " CLEAR";
         InformationText.GetComponent<Animation>().Stop();
         InformationText.GetComponent<Animation>().Play("TextAnimation");
+
+        FadeOutPanel.GetComponent<Animation>().Stop();
+        FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
 
         gameStatus = GameStatus.Cleared;
 
@@ -2696,6 +2724,28 @@ public partial class PanelSystem : MonoBehaviour
         }
 
         SceneManager.LoadScene("TitleMain");
+
+        yield break;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="sec"></param>
+    /// <returns></returns>
+    public IEnumerator FadeOutScreenPostAnimation()
+    {
+        float sec = 0.5f;
+        for (float i = 0; i < 1f; i += 1f / (sec * 60))
+        {
+            // camera.orthographicSize /= 1.1f;
+            FadeOutPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, i);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        SceneManager.LoadScene("PostAnimation");
 
         yield break;
     }

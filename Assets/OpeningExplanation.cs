@@ -79,7 +79,7 @@ public class OpeningExplanation : MonoBehaviour {
     /// </summary>
     void SkipAnimation()
     {
-        SceneManager.LoadScene("GameMain");
+        SceneManager.LoadScene("OpeningAnimation");
     }
 
     /// <summary>

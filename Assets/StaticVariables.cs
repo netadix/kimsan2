@@ -94,3 +94,4 @@ static public class TextResources
         { "このゲームを評価", "EVALUATE THIS GAME", "" },
     };
 }
+
